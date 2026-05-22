@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../home/home_page.dart';
+import '../search/search_page.dart';
 import '../user/user_page.dart';
 import 'main_page.dart';
 
@@ -9,6 +10,7 @@ class MainPageState extends State<MainPage> {
 
   final List<Widget> pages = [
     const HomePage(),
+    const SearchPage(),
     const UserPage(),
   ];
 
@@ -35,6 +37,10 @@ class MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '首页',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.search),
+            label: '搜索',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
