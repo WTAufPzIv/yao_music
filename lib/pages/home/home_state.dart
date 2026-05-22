@@ -2,13 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_page.dart';
 
 class HomePageState extends State<HomePage> {
-  int count = 0;
-
-  void add() {
-    setState(() {
-      count++;
-    });
-  }
+  String markPageName = '这是首页';
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +12,10 @@ class HomePageState extends State<HomePage> {
       ),
       body: Center(
         child: Text(
-          "$count",
-          style: const TextStyle(fontSize: 40),
+          markPageName,
+          style: const TextStyle(fontSize: 20),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: add,
-        child: const Icon(Icons.add),
-      ),
+      )
     );
   }
 }
