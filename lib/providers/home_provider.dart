@@ -13,9 +13,9 @@ class HomeProvider extends ChangeNotifier {
   Future<void> loadData() async {
     banners = [NewDiscoverModel(
         id: 1999,
-        name: '1111',
-        album: '1111111',
-        artists: [ArtistModel(name: '111111')],
+        name: '这是一条长的缺省文字',
+        album: '这是一张专辑',
+        artists: [ArtistModel(name: 'AURORA')],
         image: 'lib/assets/image/banner.jpg'
     )];
     try {
