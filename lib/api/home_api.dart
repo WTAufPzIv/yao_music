@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../models/daily_recommend.dart';
+import '../models/hot_top.dart';
 import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
 import '../models/personalized_set_list.dart';
@@ -47,6 +48,16 @@ class HomeApi {
     final List list = response.data['albums'];
     return list.map((e) {
       return NewAlbumReleaseModel.fromJson(e);
+    }).toList();
+  }
+  /// 获取热歌榜
+  static Future<List<HotTopModel>> fetchHotTop() async {
+    final response = await dio.get(
+      '$baseUrl/playlist/detail?id=3778678',
+    );
+    final List list = response.data['playlist']?['tracks'];
+    return list.map((e) {
+      return HotTopModel.fromJson(e);
     }).toList();
   }
 }

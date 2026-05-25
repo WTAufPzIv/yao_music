@@ -59,6 +59,7 @@ class _DiscoverBannerState extends State<NewDiscover> with AutomaticKeepAliveCli
           ),
           child: Skeletonizer(
             enabled: loading,
+            enableSwitchAnimation: true,
             child: SizedBox(
               height: 260,
               child: PageView.builder(

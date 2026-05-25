@@ -63,6 +63,7 @@ class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAlive
           ),
           child: Skeletonizer(
             enabled: loading,
+            enableSwitchAnimation: true,
             child: SizedBox(
               height: 258,
               child: PageView.builder(

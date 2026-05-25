@@ -74,6 +74,7 @@ class _NewAlbumReleaseState extends State<NewAlbumRelease> with AutomaticKeepAli
               ),
               child: Skeletonizer(
                 enabled: loading,
+                enableSwitchAnimation: true,
                 child: SizedBox(
                   height: 200,
                   child: PageView.builder(

@@ -1,5 +1,6 @@
 import '../api/home_api.dart';
 import '../models/daily_recommend.dart';
+import '../models/hot_top.dart';
 import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
 import '../models/personalized_set_list.dart';
@@ -24,5 +25,10 @@ class HomeService {
   static Future<List<NewAlbumReleaseModel>> getNewAlbumRelease() async  {
     final result = await HomeApi.fetchNewAlbumRelease();
     return result.take(10).toList();
+  }
+  /// 获取热歌榜前20
+  static Future<List<HotTopModel>> getHotTop() async  {
+    final result = await HomeApi.fetchHotTop();
+    return result.take(20).toList();
   }
 }

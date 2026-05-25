@@ -75,6 +75,7 @@ class _PersonalizedSetListState extends State<PersonalizedSetList> with Automati
               ),
               child: Skeletonizer(
                 enabled: loading,
+                enableSwitchAnimation: true,
                 child: SizedBox(
                   height: 370,
                   child: PageView.builder(

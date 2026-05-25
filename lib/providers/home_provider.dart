@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:yao_music/models/hot_top.dart';
 import 'package:yao_music/models/personalized_set_list.dart';
 
 import '../constants/load_state.dart';
@@ -28,6 +29,10 @@ class HomeProvider extends ChangeNotifier {
   List<NewAlbumReleaseModel> newAlbum = [];
   /// 新碟上架加载状态
   LoadState loadNewAlbumReleaseState = LoadState.loading;
+  /// 热歌榜数据
+  List<HotTopModel> hot = [];
+  /// 热歌榜加载状态
+  LoadState loadHotTopState = LoadState.loading;
 
   /// 加载banner数据
   Future<void> loadBannerData() async {
@@ -118,6 +123,29 @@ class HomeProvider extends ChangeNotifier {
       loadNewAlbumReleaseState = LoadState.success;
     } catch (e) {
       loadNewAlbumReleaseState = LoadState.error;
+    }
+    notifyListeners();
+  }
+  /// 加载热歌榜
+  Future<void> loadHotTop() async {
+    List<HotTopModel> place = List.generate(
+      10,
+          (_) => HotTopModel(
+          id: random.nextInt(100),
+          name: '这是专辑名称',
+          album: AlbumOfHotTop( id: random.nextInt(100), name: '这是专辑名称', picUrl: 'lib/assets/image/banner.jpg' ),
+          artistList: [ ArtistOfHotTop(id: random.nextInt(100), name: '歌手名') ]
+      ),
+    );
+    hot = place;
+    try {
+      loadHotTopState = LoadState.loading;
+      notifyListeners();
+      final result = await HomeService.getHotTop();
+      hot = result;
+      loadHotTopState = LoadState.success;
+    } catch (e) {
+      loadHotTopState = LoadState.error;
     }
     notifyListeners();
   }

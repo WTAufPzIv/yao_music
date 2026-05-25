@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yao_music/pages/home/widgets/daily_recommend.dart';
+import 'package:yao_music/pages/home/widgets/hot_top.dart';
 import 'package:yao_music/pages/home/widgets/new_album_release.dart';
 import 'package:yao_music/pages/home/widgets/new_discover.dart';
 import 'package:yao_music/pages/home/widgets/personalized_set_list.dart';
@@ -36,7 +37,8 @@ class HomePageState extends State<HomePage> {
               const NewDiscover(),
               const DailyRecommend(),
               const PersonalizedSetList(),
-              const NewAlbumRelease()
+              const NewAlbumRelease(),
+              const HotTop()
             ],
           )
       )
