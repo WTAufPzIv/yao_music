@@ -19,7 +19,7 @@ class HotTop extends StatefulWidget {
 
 class _HotTopState extends State<HotTop> with AutomaticKeepAliveClientMixin {
   final PageController controller = PageController(
-    viewportFraction: 0.9,
+    viewportFraction: 0.95,
   );
 
   @override
@@ -66,7 +66,7 @@ class _HotTopState extends State<HotTop> with AutomaticKeepAliveClientMixin {
                 enabled: loading,
                 enableSwitchAnimation: true,
                 child: SizedBox(
-                  height: 320,
+                  height: 330,
                   child: PageView.builder(
                     controller: controller,
                     padEnds: false,
