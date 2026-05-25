@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:yao_music/pages/home/widgets/daily_recommend.dart';
+import 'package:yao_music/pages/home/widgets/new_album_release.dart';
 import 'package:yao_music/pages/home/widgets/new_discover.dart';
 import 'package:yao_music/pages/home/widgets/personalized_set_list.dart';
 import '../../theme/app_color.dart';
@@ -16,6 +17,7 @@ class HomePageState extends State<HomePage> {
         backgroundColor: YMusicColors.background,
       body: SafeArea(
           child: ListView(
+            addAutomaticKeepAlives: true,
             padding: const EdgeInsets.symmetric(
               vertical: YMusicSpacing.xl,
             ),
@@ -34,6 +36,7 @@ class HomePageState extends State<HomePage> {
               const NewDiscover(),
               const DailyRecommend(),
               const PersonalizedSetList(),
+              const NewAlbumRelease()
             ],
           )
       )

@@ -5,6 +5,7 @@ import 'package:yao_music/models/personalized_set_list.dart';
 
 import '../constants/load_state.dart';
 import '../models/daily_recommend.dart';
+import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
 import '../services/home_service.dart';
 
@@ -23,6 +24,10 @@ class HomeProvider extends ChangeNotifier {
   List<PersonalizedSetListModel> personalized = [];
   /// 推荐歌单加载状态
   LoadState loadPersonalizedState = LoadState.loading;
+  /// 新碟上架数据
+  List<NewAlbumReleaseModel> newAlbum = [];
+  /// 新碟上架加载状态
+  LoadState loadNewAlbumReleaseState = LoadState.loading;
 
   /// 加载banner数据
   Future<void> loadBannerData() async {
@@ -90,6 +95,29 @@ class HomeProvider extends ChangeNotifier {
       loadPersonalizedState = LoadState.success;
     } catch (e) {
       loadPersonalizedState = LoadState.error;
+    }
+    notifyListeners();
+  }
+  /// 加载新碟上架
+  Future<void> loadNewAlbumRelease() async {
+    List<NewAlbumReleaseModel> place = List.generate(
+      6,
+          (_) => NewAlbumReleaseModel(
+          id: random.nextInt(100),
+          name: '这是专辑名称',
+          picUrl: 'lib/assets/image/banner.jpg',
+          artistList: [ ArtistOfNewAlbumReleaseModel(id: random.nextInt(100), name: '歌手名') ]
+      ),
+    );
+    newAlbum = place;
+    try {
+      loadNewAlbumReleaseState = LoadState.loading;
+      notifyListeners();
+      final result = await HomeService.getNewAlbumRelease();
+      newAlbum = result;
+      loadNewAlbumReleaseState = LoadState.success;
+    } catch (e) {
+      loadNewAlbumReleaseState = LoadState.error;
     }
     notifyListeners();
   }

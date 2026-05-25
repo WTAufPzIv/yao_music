@@ -10,16 +10,19 @@ import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
 
 class DailyRecommend extends StatefulWidget {
-  const DailyRecommend({super.key});
+  const DailyRecommend({ super.key });
 
   @override
   State<DailyRecommend> createState() => _DailyRecommendState();
 }
 
-class _DailyRecommendState extends State<DailyRecommend> {
+class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAliveClientMixin {
   final PageController controller = PageController(
     viewportFraction: 0.9,
   );
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _DailyRecommendState extends State<DailyRecommend> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final provider = context.watch<HomeProvider>();
     bool loading = provider.loadBannerState == LoadState.loading;
     final List<DailyRecommendModel> daily = provider.daily;

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../models/daily_recommend.dart';
+import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
 import '../models/personalized_set_list.dart';
 import 'constants.dart';
@@ -38,5 +39,14 @@ class HomeApi {
       return PersonalizedSetListModel.fromJson(e);
     }).toList();
   }
-  /// 获取
+  /// 获取新碟上架
+  static Future<List<NewAlbumReleaseModel>> fetchNewAlbumRelease() async {
+    final response = await dio.get(
+      '$baseUrl/album/newest',
+    );
+    final List list = response.data['albums'];
+    return list.map((e) {
+      return NewAlbumReleaseModel.fromJson(e);
+    }).toList();
+  }
 }

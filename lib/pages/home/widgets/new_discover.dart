@@ -16,10 +16,13 @@ class NewDiscover extends StatefulWidget {
   State<NewDiscover> createState() => _DiscoverBannerState();
 }
 
-class _DiscoverBannerState extends State<NewDiscover> {
+class _DiscoverBannerState extends State<NewDiscover> with AutomaticKeepAliveClientMixin {
   final PageController controller = PageController(
     viewportFraction: 0.88,
   );
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -32,6 +35,7 @@ class _DiscoverBannerState extends State<NewDiscover> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final provider = context.watch<HomeProvider>();
     bool loading = provider.loadBannerState == LoadState.loading;
     final List<NewDiscoverModel> banners = provider.banners;
