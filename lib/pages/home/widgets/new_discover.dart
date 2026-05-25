@@ -26,14 +26,14 @@ class _DiscoverBannerState extends State<NewDiscover> {
     super.initState();
     // 确保 context 安全
     Future.microtask(() {
-      context.read<HomeProvider>().loadData();
+      context.read<HomeProvider>().loadBannerData();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<HomeProvider>();
-    bool loading = provider.loadState == LoadState.loading;
+    bool loading = provider.loadBannerState == LoadState.loading;
     final List<NewDiscoverModel> banners = provider.banners;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,66 +43,71 @@ class _DiscoverBannerState extends State<NewDiscover> {
           padding: const EdgeInsets.symmetric(
             horizontal: YMusicSpacing.lg,
           ),
-
           child: Text(
             '新歌速递',
-            style: YMusicTextStyles.largeTitle,
+            style: YMusicTextStyles.title1,
           ),
         ),
-        const SizedBox(height: YMusicSpacing.xl),
-        Skeletonizer(
-          enabled: loading,
-          child: SizedBox(
-            height: 260,
-            child: PageView.builder(
-              controller: controller,
-              itemCount: banners.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                    padding: const EdgeInsets.only(
-                      right: YMusicSpacing.md,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(YMusicRadius.xl),
-                      child: Stack(
-                        fit: StackFit.expand,
-                        children: [
-                          // 背景图
-                          banners[index]!.image.startsWith('http') ? Image.network(banners[index]!.image, fit: BoxFit.cover) : Image.asset(banners[index]!.image, fit: BoxFit.cover),
-                          // 渐变遮罩
-                          Container(
-                            decoration: const BoxDecoration(
-                                gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Color(0xCC000000),
-                                    ]
-                                )
-                            ),
-                          ),
-                          // 文字
-                          Positioned(
-                            left: YMusicSpacing.lg,
-                            right: YMusicSpacing.lg,
-                            bottom: YMusicSpacing.xl,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(banners[index]!.album, style: YMusicTextStyles.caption.copyWith(color: Colors.white70,)),
-                                const SizedBox(height: YMusicSpacing.xs),
-                                Text(banners[index]!.name, style: YMusicTextStyles.title1),
-                                const SizedBox(height: YMusicSpacing.xs),
-                                Text(banners[index]!.artistNames, style: YMusicTextStyles.title2),
-                              ],
-                            ),
-                          )
-                        ],
+        const SizedBox(height: YMusicSpacing.md),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: YMusicSpacing.lg,
+          ),
+          child: Skeletonizer(
+            enabled: loading,
+            child: SizedBox(
+              height: 260,
+              child: PageView.builder(
+                padEnds: false,
+                controller: controller,
+                itemCount: banners.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                      padding: const EdgeInsets.only(
+                        right: YMusicSpacing.md,
                       ),
-                    )
-                );
-              },
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(YMusicRadius.xl),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            // 背景图
+                            banners[index]!.image.startsWith('http') ? Image.network(banners[index]!.image, fit: BoxFit.cover) : Image.asset(banners[index]!.image, fit: BoxFit.cover),
+                            // 渐变遮罩
+                            Container(
+                              decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      colors: [
+                                        Colors.transparent,
+                                        Color(0xCC000000),
+                                      ]
+                                  )
+                              ),
+                            ),
+                            // 文字
+                            Positioned(
+                              left: YMusicSpacing.lg,
+                              right: YMusicSpacing.lg,
+                              bottom: YMusicSpacing.xl,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(banners[index]!.album, style: YMusicTextStyles.caption.copyWith(color: Colors.white70,)),
+                                  const SizedBox(height: YMusicSpacing.xs),
+                                  Text(banners[index]!.name, style: YMusicTextStyles.title1),
+                                  const SizedBox(height: YMusicSpacing.xs),
+                                  Text(banners[index]!.artistNames, style: YMusicTextStyles.title2),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      )
+                  );
+                },
+              ),
             ),
           ),
         )

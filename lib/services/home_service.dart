@@ -1,6 +1,7 @@
 import '../api/home_api.dart';
 import '../models/daily_recommend.dart';
 import '../models/new_discover.dart';
+import '../models/personalized_set_list.dart';
 
 class HomeService {
   /// 获取发现 Banner
@@ -9,8 +10,13 @@ class HomeService {
     return result.take(20).toList();
   }
   /// 获取日推
-  static Future<List<DailyRecommend>> getDailyRecommend() async {
+  static Future<List<DailyRecommendModel>> getDailyRecommend() async {
     final result = await HomeApi.fetchDailyRecommend();
+    return result.take(12).toList();
+  }
+  /// 获取推荐歌单
+  static Future<List<PersonalizedSetListModel>> getPersonalizedSetList() async  {
+    final result = await HomeApi.fetchPersonalizedSetList();
     return result.take(20).toList();
   }
 }

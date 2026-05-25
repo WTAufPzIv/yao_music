@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:yao_music/pages/home/widgets/daily_recommend.dart';
 import 'package:yao_music/pages/home/widgets/new_discover.dart';
+import 'package:yao_music/pages/home/widgets/personalized_set_list.dart';
 import '../../theme/app_color.dart';
 import '../../theme/app_space.dart';
+import '../../theme/app_text.dart';
 import 'home_page.dart';
 
 class HomePageState extends State<HomePage> {
@@ -17,7 +20,20 @@ class HomePageState extends State<HomePage> {
               vertical: YMusicSpacing.xl,
             ),
             children: [
-              const NewDiscover()
+              /// 标题
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: YMusicSpacing.lg,
+                  vertical: YMusicSpacing.lg,
+                ),
+                child: Text(
+                  '主页',
+                  style: YMusicTextStyles.largeTitle,
+                ),
+              ),
+              const NewDiscover(),
+              const DailyRecommend(),
+              const PersonalizedSetList(),
             ],
           )
       )

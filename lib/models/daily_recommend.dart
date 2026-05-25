@@ -40,7 +40,7 @@ class ArtistOfDailyRecommend {
   }
 }
 
-class DailyRecommend {
+class DailyRecommendModel {
   /// 歌曲id
   final int id;
   /// 歌名
@@ -49,16 +49,21 @@ class DailyRecommend {
   final AlbumOfDailyRecommend album;
   /// 歌手信息
   final List<ArtistOfDailyRecommend> artistList;
+  String get artistNames {
+    return artistList
+        .map((e) => e.name)
+        .join(' / ');
+  }
 
-  DailyRecommend({
+  DailyRecommendModel({
     required this.id,
     required this.name,
     required this.album,
     required this.artistList
   });
 
-  factory DailyRecommend.fromJson(Map<String, dynamic> json) {
-    return DailyRecommend(
+  factory DailyRecommendModel.fromJson(Map<String, dynamic> json) {
+    return DailyRecommendModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       album: AlbumOfDailyRecommend.fromJson(json['al']),

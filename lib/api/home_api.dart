@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../models/daily_recommend.dart';
 import '../models/new_discover.dart';
+import '../models/personalized_set_list.dart';
 import 'constants.dart';
 
 final Dio dio = Dio();
@@ -18,13 +19,24 @@ class HomeApi {
     }).toList();
   }
   /// 获取日推
-  static Future<List<DailyRecommend>> fetchDailyRecommend() async {
+  static Future<List<DailyRecommendModel>> fetchDailyRecommend() async {
     final response = await dio.get(
       '$baseUrl/recommend/songs',
     );
     final List list = response.data['data']?['dailySongs'];
     return list.map((e) {
-      return DailyRecommend.fromJson(e);
+      return DailyRecommendModel.fromJson(e);
     }).toList();
   }
+  /// 获取每日推荐歌单
+  static Future<List<PersonalizedSetListModel>> fetchPersonalizedSetList() async {
+    final response = await dio.get(
+      '$baseUrl/personalized',
+    );
+    final List list = response.data['result'];
+    return list.map((e) {
+      return PersonalizedSetListModel.fromJson(e);
+    }).toList();
+  }
+  /// 获取
 }
