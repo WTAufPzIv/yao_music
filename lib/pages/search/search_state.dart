@@ -1,20 +1,36 @@
 import 'package:flutter/material.dart';
-import 'search_page.dart';
+import 'package:yao_music/pages/search/search_page.dart';
+import '../../theme/app_color.dart';
+import '../../theme/app_space.dart';
+import '../../theme/app_text.dart';
 
-class SomePageState extends State<SearchPage> {
-  String markPageName = '这是搜索页';
+class SearchPageState extends State<SearchPage> {
+  String markPageName = '这是搜索';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('搜索'),
-        ),
-        body: Center(
-          child: Text(
-            markPageName,
-            style: const TextStyle(fontSize: 20),
-          ),
+        backgroundColor: YMusicColors.background,
+        body: SafeArea(
+            child: ListView(
+              addAutomaticKeepAlives: true,
+              padding: const EdgeInsets.symmetric(
+                vertical: YMusicSpacing.xl,
+              ),
+              children: [
+                /// 标题
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: YMusicSpacing.lg,
+                    vertical: YMusicSpacing.lg,
+                  ),
+                  child: Text(
+                    '搜索',
+                    style: YMusicTextStyles.largeTitle,
+                  ),
+                ),
+              ],
+            )
         )
     );
   }

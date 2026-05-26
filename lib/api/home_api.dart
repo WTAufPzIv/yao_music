@@ -5,6 +5,7 @@ import '../models/hot_top.dart';
 import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
 import '../models/personalized_set_list.dart';
+import '../models/rank_list.dart';
 import 'constants.dart';
 
 final Dio dio = Dio();
@@ -33,7 +34,17 @@ class HomeApi {
   /// 获取每日推荐歌单
   static Future<List<PersonalizedSetListModel>> fetchPersonalizedSetList() async {
     final response = await dio.get(
-      '$baseUrl/personalized',
+      '$baseUrl/personalized?limit=20',
+    );
+    final List list = response.data['result'];
+    return list.map((e) {
+      return PersonalizedSetListModel.fromJson(e);
+    }).toList();
+  }
+  /// 获取每日推荐歌单 - 100个
+  static Future<List<PersonalizedSetListModel>> fetchPersonalizedSetListFull() async {
+    final response = await dio.get(
+      '$baseUrl/personalized?limit=100',
     );
     final List list = response.data['result'];
     return list.map((e) {
@@ -58,6 +69,16 @@ class HomeApi {
     final List list = response.data['playlist']?['tracks'];
     return list.map((e) {
       return HotTopModel.fromJson(e);
+    }).toList();
+  }
+  /// 获取榜单列表
+  static Future<List<RankListModel>> fetchRankList() async {
+    final response = await dio.get(
+      '$baseUrl/toplist',
+    );
+    final List list = response.data['list'];
+    return list.map((e) {
+      return RankListModel.fromJson(e);
     }).toList();
   }
 }

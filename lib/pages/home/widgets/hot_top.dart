@@ -1,9 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:yao_music/models/daily_recommend.dart';
 import 'package:yao_music/models/hot_top.dart';
 
+import '../../../components/music_cover.dart';
 import '../../../constants/load_state.dart';
 import '../../../providers/home_provider.dart';
 import '../../../theme/app_radius.dart';
@@ -122,21 +124,17 @@ class _MusicItem extends StatelessWidget {
       child: Row(
         children: [
           // 左侧封面
-          ClipRRect(
-            borderRadius: BorderRadius.circular(YMusicRadius.sm),
-            child: song.album.picUrl!.startsWith('http') ? Image.network(
-              song.album.picUrl,
-              width: 52,
-              height: 52,
-              fit: BoxFit.cover,
-            ) : Image.asset(
-              song.album.picUrl,
-              width: 52,
-              height: 52,
-              fit: BoxFit.cover,
-            ),
+          song.album.picUrl!.startsWith('http') ? MusicCover(
+            imageUrl: '${song.album.picUrl}?param=100y100',
+            width: 52,
+            height: 52,
+            radius: YMusicRadius.sm,
+          ): Image.asset(
+            song.album.picUrl,
+            width: 52,
+            height: 52,
+            fit: BoxFit.cover,
           ),
-
           const SizedBox(width: YMusicSpacing.md),
 
           // 中间文字

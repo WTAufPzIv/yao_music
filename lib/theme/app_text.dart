@@ -30,6 +30,13 @@ class YMusicTextStyles  {
     fontWeight: FontWeight.w600,
     color: YMusicColors.textPrimary,
   );
+
+  /// 路由标题
+  static const TextStyle router = TextStyle(
+    fontSize: 22,
+    color: YMusicColors.textPrimary,
+  );
+
   /// 正文大
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 17,

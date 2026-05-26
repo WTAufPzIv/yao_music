@@ -4,6 +4,7 @@ import 'package:yao_music/pages/home/widgets/hot_top.dart';
 import 'package:yao_music/pages/home/widgets/new_album_release.dart';
 import 'package:yao_music/pages/home/widgets/new_discover.dart';
 import 'package:yao_music/pages/home/widgets/personalized_set_list.dart';
+import 'package:yao_music/pages/home/widgets/rank_list.dart';
 import '../../theme/app_color.dart';
 import '../../theme/app_space.dart';
 import '../../theme/app_text.dart';
@@ -15,7 +16,7 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: YMusicColors.background,
+      backgroundColor: YMusicColors.background,
       body: SafeArea(
           child: ListView(
             addAutomaticKeepAlives: true,
@@ -38,7 +39,8 @@ class HomePageState extends State<HomePage> {
               const DailyRecommend(),
               const PersonalizedSetList(),
               const NewAlbumRelease(),
-              const HotTop()
+              const HotTop(),
+              const RankList()
             ],
           )
       )

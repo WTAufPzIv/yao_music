@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:provider/provider.dart';
 
+import '../../../components/music_cover.dart';
 import '../../../constants/load_state.dart';
 import '../../../models/new_discover.dart';
 import '../../../providers/home_provider.dart';
@@ -77,7 +79,14 @@ class _DiscoverBannerState extends State<NewDiscover> with AutomaticKeepAliveCli
                           fit: StackFit.expand,
                           children: [
                             // 背景图
-                            banners[index]!.image.startsWith('http') ? Image.network(banners[index]!.image, fit: BoxFit.cover) : Image.asset(banners[index]!.image, fit: BoxFit.cover),
+                            banners[index]!.image.startsWith('http') ? MusicCover(
+                                imageUrl: '${banners[index]!.image}?param=500y500',
+                                width: 260,
+                                height: 260,
+                                radius: YMusicRadius.lg,
+                            ) : Image.asset(
+                                banners[index]!.image, fit: BoxFit.cover
+                            ),
                             // 渐变遮罩
                             Container(
                               decoration: const BoxDecoration(
