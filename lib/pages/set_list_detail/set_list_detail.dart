@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:provider/provider.dart';
 import 'package:yao_music/theme/app_color.dart';
+import 'package:yao_music/theme/app_text.dart';
 
 import '../../constants/load_state.dart';
 import '../../models/set_list_detail.dart';
@@ -25,7 +28,6 @@ class _SetListDetailState extends State<SetListDetail> {
   Color bgColor = YMusicColors.background;
   /// 滚动距离
   double scrollOffset = 0;
-  static const double expandedHeight = 420;
 
   /// 提取封面主色
   Future<void> updateBgColor(String imageUrl) async {
@@ -72,11 +74,11 @@ class _SetListDetailState extends State<SetListDetail> {
     bool loading = provider.loadState == LoadState.loading;
     final SetListDetailModel detail = provider.detail;
     /// 数据加载完成后提取颜色
-    // if (!loading && detail.coverImgUrl != null && detail.coverImgUrl!.isNotEmpty) {
-    //   WidgetsBinding.instance.addPostFrameCallback((_) {
-    //     updateBgColor(detail.coverImgUrl!);
-    //   });
-    // }
+    if (!loading && detail.coverImgUrl != null && detail.coverImgUrl!.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        updateBgColor(detail.coverImgUrl!);
+      });
+    }
     return Scaffold(
       backgroundColor: bgColor,
       body: loading ? const Center(
@@ -91,7 +93,7 @@ class _SetListDetailState extends State<SetListDetail> {
             SliverAppBar(
               pinned: true,
               elevation: 0,
-              expandedHeight: expandedHeight,
+              expandedHeight: 400,
               backgroundColor: Colors.transparent,
               automaticallyImplyLeading: false,
               flexibleSpace: LayoutBuilder(
@@ -100,18 +102,21 @@ class _SetListDetailState extends State<SetListDetail> {
                     fit: StackFit.expand,
                     children: [
                       /// 背景封面
-                      // Image.network(
-                      //   detail.coverImgUrl ?? '',
-                      //   fit: BoxFit.cover,
-                      // ),
+                      CachedNetworkImage(
+                        imageUrl: detail.coverImgUrl,
+                        width: 300,
+                        height: 300,
+                        httpHeaders: { "user-agent": 'windows' },
+                        fit: BoxFit.cover,
+                      ),
                       /// 毛玻璃
                       BackdropFilter(
                         filter: ImageFilter.blur(
-                          sigmaX: 40,
-                          sigmaY: 40,
+                          sigmaX: 0,
+                          sigmaY: 0,
                         ),
                         child: Container(
-                          color: Colors.black.withOpacity(0.15),
+                          color: Colors.black.withOpacity(0.05),
                         ),
                       ),
                       /// 渐变遮罩
@@ -176,85 +181,108 @@ class _SetListDetailState extends State<SetListDetail> {
                       Positioned(
                         left: 24,
                         right: 24,
-                        bottom: 40,
-                        child: Opacity(
-                          opacity: 1 - collapseProgress,
-                          child: Transform.translate(
-                            offset: Offset(
-                              0,
-                              30 * collapseProgress,
-                            ),
-                            child: Column(
-                              children: [
-                                /// 封面
-                                Container(
-                                  width: 180,
-                                  height: 180,
-                                  decoration: BoxDecoration(
-                                    borderRadius:
-                                    BorderRadius.circular(16),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black
-                                            .withOpacity(0.35),
-                                        blurRadius: 30,
-                                        offset: const Offset(0, 15),
-                                      ),
-                                    ],
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius:
-                                    BorderRadius.circular(16),
-                                    // child: Image.network(
-                                    //   detail.coverImgUrl ?? '',
-                                    //   fit: BoxFit.cover,
-                                    // ),
-                                  ),
-                                ),
-
-                                const SizedBox(height: 24),
-
-                                /// 标题
-                                Text(
-                                  detail.name ?? '',
-                                  textAlign: TextAlign.center,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.w700,
-                                    height: 1.1,
-                                  ),
-                                ),
-
-                                const SizedBox(height: 10),
-
-                                /// 描述
-                                Text(
-                                  detail.description ?? '',
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white
-                                        .withOpacity(0.75),
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                        bottom: 0,
+                        child: Column(
+                          children: [
+                            /// 标题
+                            Text(
+                              detail.name ?? '',
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: YMusicTextStyles.title3,
+                            )
+                          ],
                         ),
                       ),
                     ],
                   );
                 },
               )
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding:  const EdgeInsets.symmetric(
+                  horizontal: YMusicSpacing.xl,
+                  // vertical: YMusicSpacing.sm,
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: YMusicSpacing.md),                      Text(
+                        detail.description ?? '',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: YMusicTextStyles.bodySmall,
+                      ),
+                      const SizedBox(height: YMusicSpacing.md),
+                      SizedBox(
+                        width: 200,
+                        child: _actionButton(
+                          icon:
+                          Icons.play_arrow_rounded,
+                          text: '播放',
+                        ),
+                      )
+                    ],
+                  )
+                )
+              )
             )
           ],
         ),
       )
+    );
+  }
+
+  Widget _actionButton({
+    required IconData icon,
+    required String text,
+  }) {
+    return Container(
+      height: 46,
+
+      decoration: BoxDecoration(
+
+        /// 半透明背景
+        color: Colors.white.withOpacity(0.1),
+
+        borderRadius:
+        BorderRadius.circular(999),
+
+        border: Border.all(
+          color: Colors.white.withOpacity(0.08),
+        ),
+      ),
+
+      child: Row(
+        mainAxisAlignment:
+        MainAxisAlignment.center,
+
+        children: [
+
+          Icon(
+            icon,
+            color: Colors.white,
+            size: 20,
+          ),
+
+          const SizedBox(width: 6),
+
+          Text(
+            text,
+
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

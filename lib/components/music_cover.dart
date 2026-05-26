@@ -39,6 +39,7 @@ class MusicCover extends StatelessWidget {
         borderRadius: BorderRadius.circular(radius),
         child: CachedNetworkImage(
           imageUrl: imageUrl,
+          httpHeaders: {'user-agent': 'windows'},
           width: width,
           height: height,
           placeholder: (context, url) {
