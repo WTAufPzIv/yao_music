@@ -68,6 +68,7 @@ class HomeProvider extends ChangeNotifier {
         loadBannerState = LoadState.success;
       }
     } catch (e) {
+
       loadBannerState = LoadState.error;
     }
     notifyListeners();

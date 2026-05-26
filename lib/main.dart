@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yao_music/providers/home_provider.dart';
+import 'package:yao_music/providers/set_list_provider.dart';
 import 'app/app.dart';
 
 void main() => runApp(
@@ -8,6 +9,9 @@ void main() => runApp(
     providers: [
       ChangeNotifierProvider(
         create: (_) => HomeProvider(),
+      ),
+      ChangeNotifierProvider(
+        create: (_) => SetListProvider(),
       )
     ],
     child: const MyApp(),

@@ -14,6 +14,7 @@ import '../../../theme/app_color.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
+import '../../set_list_detail/set_list_detail.dart';
 
 class PersonalizedSetList extends StatefulWidget {
   const PersonalizedSetList({super.key});
@@ -248,17 +249,27 @@ class _PersonalizedSetListCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          /// 封面
-          personalized.picUrl!.startsWith('http') ? MusicCover(
-            imageUrl: '${personalized.picUrl}?param=300y300',
-            width: isSimple ? 150 : 180,
-            height: isSimple ? 150 : 180,
-            radius: YMusicRadius.md,
-          ): Image.asset(
-            personalized.picUrl,
-            width: isSimple ? 150 : 180,
-            height: isSimple ? 150 : 180,
-            fit: BoxFit.cover,
+          GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SetListDetail(setListId: personalized.id),
+                  ),
+                );
+              },
+              child: /// 封面
+              personalized.picUrl!.startsWith('http') ? MusicCover(
+                imageUrl: '${personalized.picUrl}?param=300y300',
+                width: isSimple ? 150 : 180,
+                height: isSimple ? 150 : 180,
+                radius: YMusicRadius.md,
+              ): Image.asset(
+                personalized.picUrl,
+                width: isSimple ? 150 : 180,
+                height: isSimple ? 150 : 180,
+                fit: BoxFit.cover,
+              ),
           ),
           const SizedBox(height: YMusicSpacing.md),
           /// 标题
