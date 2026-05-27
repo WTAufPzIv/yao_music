@@ -93,7 +93,11 @@ class _HotTopState extends State<HotTop> with AutomaticKeepAliveClientMixin {
                             ),
                             itemBuilder: (context, index) {
                               final song = pageSongs[index];
-                              return _MusicItem(song: song, loading: loading);
+                              return _MusicItem(
+                                  song: song,
+                                  loading: loading,
+                                  openSongInfo: (HotTopModel song) => provider.showSongInfoSheet(context, song)
+                              );
                             },
                           ),
                         ),
@@ -111,10 +115,12 @@ class _HotTopState extends State<HotTop> with AutomaticKeepAliveClientMixin {
 class _MusicItem extends StatelessWidget {
   final HotTopModel song;
   final bool loading;
+  final Function(HotTopModel song) openSongInfo;
 
   const _MusicItem({
     required this.song,
     required this.loading,
+    required this.openSongInfo
   });
 
   @override
@@ -162,13 +168,12 @@ class _MusicItem extends StatelessWidget {
 
           const SizedBox(width: YMusicSpacing.md),
 
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.more_vert,
-              color: Colors.white,
-            ),
-          ),
+          IconButton(onPressed: () {
+            openSongInfo(song);
+          }, icon: const Icon(
+            Icons.more_vert,
+            color: Colors.white,
+          ))
         ],
       ),
     );

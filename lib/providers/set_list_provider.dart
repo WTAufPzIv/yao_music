@@ -3,10 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:yao_music/constants/load_state.dart';
+import 'package:yao_music/theme/app_text.dart';
 
 import '../models/set_list_detail.dart';
 import '../services/set_list_detail_service.dart';
 import '../theme/app_color.dart';
+import '../theme/app_space.dart';
 
 class SetListProvider extends ChangeNotifier {
   /// 页面背景色
@@ -74,5 +76,230 @@ class SetListProvider extends ChangeNotifier {
       loadState = LoadState.error;
     }
     notifyListeners();
+  }
+
+  Future<void> showDescriptionSheet (BuildContext context, String description) async {
+    final maxHeight = MediaQuery.of(context).size.height * 0.5;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: YMusicColors.background,
+      isScrollControlled: true,
+      builder: (_) {
+        return SafeArea(
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: maxHeight,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C1E).withOpacity(0.94),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// 顶部拖拽条
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: 12,
+                    bottom: 8,
+                  ),
+                  child: Container(
+                    width: 36,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+
+                /// 标题
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8,
+                  ),
+                  child: Text(
+                    "歌单简介",
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
+
+                /// 内容
+                Flexible(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.fromLTRB(
+                      24,
+                      8,
+                      24,
+                      32,
+                    ),
+                    child: Text(
+                      description,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 15,
+                        height: 1.7,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> showSongInfoSheet (BuildContext context, SetListDetailSongsModel song) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: YMusicColors.background,
+      isScrollControlled: true,
+      builder: (_) {
+        return SafeArea(
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: 500,
+            ),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C1E).withOpacity(0.94),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                /// 顶部拖拽条
+                Padding(
+                  padding: const EdgeInsets.only(
+                    top: YMusicSpacing.md,
+                  ),
+                  child: Container(
+                    width: 36,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.white24,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: YMusicSpacing.md,
+                    vertical: YMusicSpacing.md,
+                  ),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: Padding(
+                          padding: EdgeInsetsGeometry.symmetric(
+                            vertical: YMusicSpacing.lg,
+                            horizontal: YMusicSpacing.sm,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                  CupertinoIcons.music_mic,
+                                  color: YMusicColors.primary,
+                                  size: 25
+                              ),
+                              SizedBox(
+                                width: YMusicSpacing.md,
+                              ),
+                              Text(
+                                  '歌手：${song.artistNames}',
+                                  style: YMusicTextStyles.body,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis
+                              )
+                            ],
+                          ),
+                        )
+                      ),
+                      const Divider(
+                        height: 1,
+                        indent: 0,
+                        endIndent: 0,
+                        color: Colors.white12,
+                      ),
+                      SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: EdgeInsetsGeometry.symmetric(
+                              horizontal: YMusicSpacing.sm,
+                              vertical: YMusicSpacing.lg,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                    CupertinoIcons.square_stack_3d_down_right,
+                                    color: YMusicColors.primary,
+                                    size: 25
+                                ),
+                                SizedBox(
+                                  width: YMusicSpacing.md,
+                                ),
+                                Text(
+                                    '专辑：${song.album.name}',
+                                    style: YMusicTextStyles.body,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis
+                                )
+                              ],
+                            ),
+                          )
+                      ),
+                      const Divider(
+                        height: 1,
+                        indent: 0,
+                        endIndent: 0,
+                        color: Colors.white12,
+                      ),
+                      SizedBox(
+                          width: double.infinity,
+                          child: Padding(
+                            padding: EdgeInsetsGeometry.symmetric(
+                              horizontal: YMusicSpacing.sm,
+                              vertical: YMusicSpacing.lg,
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                    CupertinoIcons.cloud_download,
+                                    color: YMusicColors.primary,
+                                    size: 25
+                                ),
+                                SizedBox(
+                                  width: YMusicSpacing.md,
+                                ),
+                                Text(
+                                    '下载',
+                                    style: YMusicTextStyles.body
+                                )
+                              ],
+                            ),
+                          )
+                      )
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

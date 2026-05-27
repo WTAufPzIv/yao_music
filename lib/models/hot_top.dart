@@ -1,9 +1,17 @@
-class AlbumOfHotTop {
+import 'package:yao_music/models/song_base.dart';
+
+import 'album_base.dart';
+import 'artist_base.dart';
+
+class AlbumOfHotTop implements AlbumBaseModel {
   /// 专辑id
+  @override
   final int id;
   /// 专辑名称
+  @override
   final String name;
   /// 专辑封面
+  @override
   final String picUrl;
 
   AlbumOfHotTop({
@@ -21,10 +29,12 @@ class AlbumOfHotTop {
   }
 }
 
-class ArtistOfHotTop {
+class ArtistOfHotTop implements ArtistBaseModel {
   /// 歌手id
+  @override
   final int id;
   /// 歌手名称
+  @override
   final String name;
 
   ArtistOfHotTop({
@@ -40,15 +50,20 @@ class ArtistOfHotTop {
   }
 }
 
-class HotTopModel {
+class HotTopModel implements SongBaseModel {
   /// 歌曲id
+  @override
   final int id;
   /// 歌名
+  @override
   final String name;
   /// 专辑信息
+  @override
   final AlbumOfHotTop album;
   /// 歌手信息
+  @override
   final List<ArtistOfHotTop> artistList;
+  @override
   String get artistNames {
     return artistList
         .map((e) => e.name)

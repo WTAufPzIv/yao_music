@@ -1,7 +1,12 @@
-class ArtistOfNewAlbumReleaseModel {
+import 'package:yao_music/models/album_base.dart';
+import 'package:yao_music/models/artist_base.dart';
+
+class ArtistOfNewAlbumReleaseModel implements ArtistBaseModel {
   /// 歌手id
+  @override
   final int id;
   /// 歌手名称
+  @override
   final String name;
 
   ArtistOfNewAlbumReleaseModel({
@@ -17,15 +22,18 @@ class ArtistOfNewAlbumReleaseModel {
   }
 }
 
-class NewAlbumReleaseModel {
+class NewAlbumReleaseModel implements AlbumBaseModel {
   /// 专辑id
+  @override
   final int id;
   /// 专辑名称
+  @override
   final String name;
+  /// 专辑封面
+  @override
+  final String picUrl;
   /// 专辑歌手
   final List<ArtistOfNewAlbumReleaseModel> artistList;
-  /// 专辑封面
-  final String picUrl;
 
   String get artistNames {
     return artistList

@@ -12,6 +12,7 @@ import '../../../providers/home_provider.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
+import '../../set_list_detail/set_list_detail.dart';
 
 class RankList extends StatefulWidget {
   const RankList({ super.key });
@@ -111,16 +112,26 @@ class _RankListCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// 封面
-          rank.coverImgUrl!.startsWith('http') ? MusicCover(
-            imageUrl: '${rank.coverImgUrl}?param=300y300',
-            width: 150,
-            height: 150,
-            radius: YMusicRadius.md,
-          ): Image.asset(
-            rank.coverImgUrl,
-            width: 150,
-            height: 150,
-            fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SetListDetail(setListId: rank.id),
+                ),
+              );
+            },
+            child: rank.coverImgUrl!.startsWith('http') ? MusicCover(
+              imageUrl: '${rank.coverImgUrl}?param=300y300',
+              width: 150,
+              height: 150,
+              radius: YMusicRadius.md,
+            ): Image.asset(
+              rank.coverImgUrl,
+              width: 150,
+              height: 150,
+              fit: BoxFit.cover,
+            ),
           ),
           const SizedBox(height: YMusicSpacing.md)
         ],

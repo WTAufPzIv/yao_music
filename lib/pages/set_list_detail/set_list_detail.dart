@@ -91,9 +91,9 @@ class _SetListDetailState extends State<SetListDetail> {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              bgColor.withOpacity(0.05),
-                              bgColor.withOpacity(0.25),
-                              bgColor.withOpacity(1),
+                              bgColor.withOpacity(0.01),
+                              bgColor.withOpacity(0.15),
+                              bgColor.withOpacity(0.80),
                               bgColor,
                             ],
                           ),
@@ -115,12 +115,20 @@ class _SetListDetailState extends State<SetListDetail> {
                               style: YMusicTextStyles.title3,
                             ),
                             const SizedBox(height: YMusicSpacing.sm),
-                            Text(
-                              detail.description ?? '',
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.center,
-                              style: YMusicTextStyles.body,
+                            GestureDetector(
+                              onTap: () {
+                                provider.showDescriptionSheet(
+                                  context,
+                                  detail.description ?? ''
+                                );
+                              },
+                              child: Text(
+                                detail.description ?? '',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                textAlign: TextAlign.center,
+                                style: YMusicTextStyles.body,
+                              ),
                             ),
                             const SizedBox(height: YMusicSpacing.md),
                             SizedBox(
@@ -199,7 +207,11 @@ class _SetListDetailState extends State<SetListDetail> {
               itemBuilder: (context, index) {
                 return Column(
                   children: [
-                    _setListSongItem(song: detail.songs![index], index: index),
+                    _setListSongItem(
+                        song: detail.songs![index],
+                        index: index,
+                        openSongInfo: (SetListDetailSongsModel song) => provider.showSongInfoSheet(context, song)
+                    ),
                     if (index != detail.songs.length - 1)
                       const Divider(
                         height: 1,
@@ -261,6 +273,7 @@ class _SetListDetailState extends State<SetListDetail> {
   Widget _setListSongItem({
     required SetListDetailSongsModel song,
     required int index,
+    required Function(SetListDetailSongsModel song) openSongInfo
   }) {
     return Container(
       padding:
@@ -303,11 +316,12 @@ class _SetListDetailState extends State<SetListDetail> {
           ),
           const SizedBox(width: 12),
           /// 更多按钮
-          Icon(
-            Icons.more_horiz_rounded,
-            color: Colors.white
-                .withOpacity(0.7),
-          ),
+          IconButton(onPressed: () {
+            openSongInfo(song);
+          }, icon: const Icon(
+            Icons.more_vert,
+            color: Colors.white,
+          ))
         ],
       ),
     );

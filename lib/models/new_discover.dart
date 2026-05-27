@@ -1,10 +1,17 @@
-class ArtistModel {
+import 'package:yao_music/models/artist_base.dart';
+
+class ArtistModel implements ArtistBaseModel {
+  @override
+  final int id;
+  @override
   final String name;
   ArtistModel({
+    required this.id,
     required this.name,
   });
   factory ArtistModel.fromJson(Map<String, dynamic> json) {
     return ArtistModel(
+      id: json['id'] ?? '',
       name: json['name'] ?? '',
     );
   }

@@ -1,9 +1,17 @@
-class AlbumOfDailyRecommend {
+import 'package:yao_music/models/song_base.dart';
+
+import 'album_base.dart';
+import 'artist_base.dart';
+
+class AlbumOfDailyRecommend implements AlbumBaseModel {
   /// 专辑id
+  @override
   final int id;
   /// 专辑名称
+  @override
   final String name;
   /// 专辑封面
+  @override
   final String picUrl;
 
   AlbumOfDailyRecommend({
@@ -21,10 +29,12 @@ class AlbumOfDailyRecommend {
   }
 }
 
-class ArtistOfDailyRecommend {
+class ArtistOfDailyRecommend implements ArtistBaseModel {
   /// 歌手id
+  @override
   final int id;
   /// 歌手名称
+  @override
   final String name;
 
   ArtistOfDailyRecommend({
@@ -40,15 +50,20 @@ class ArtistOfDailyRecommend {
   }
 }
 
-class DailyRecommendModel {
+class DailyRecommendModel implements SongBaseModel {
   /// 歌曲id
+  @override
   final int id;
   /// 歌名
+  @override
   final String name;
   /// 专辑信息
+  @override
   final AlbumOfDailyRecommend album;
   /// 歌手信息
+  @override
   final List<ArtistOfDailyRecommend> artistList;
+  @override
   String get artistNames {
     return artistList
         .map((e) => e.name)

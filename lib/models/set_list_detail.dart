@@ -1,7 +1,13 @@
-class ArtistOfSetListSong {
+import 'package:yao_music/models/album_base.dart';
+import 'package:yao_music/models/artist_base.dart';
+import 'package:yao_music/models/song_base.dart';
+
+class ArtistOfSetListSong implements ArtistBaseModel {
   /// 歌手id
+  @override
   final int id;
   /// 歌手名称
+  @override
   final String name;
 
   ArtistOfSetListSong({
@@ -17,12 +23,15 @@ class ArtistOfSetListSong {
   }
 }
 
-class AlbumOfSetListSong {
+class AlbumOfSetListSong implements AlbumBaseModel {
   /// 专辑id
+  @override
   final int id;
   /// 专辑名称
+  @override
   final String name;
   /// 专辑图片
+  @override
   final String picUrl;
 
   AlbumOfSetListSong({
@@ -40,15 +49,20 @@ class AlbumOfSetListSong {
   }
 }
 
-class SetListDetailSongsModel {
+class SetListDetailSongsModel implements SongBaseModel {
   /// 歌曲id
+  @override
   final int id;
   /// 歌名
+  @override
   final String name;
   /// 歌手信息
+  @override
   final List<ArtistOfSetListSong> artistList;
   // 专辑信息
+  @override
   final AlbumOfSetListSong album;
+  @override
   String get artistNames {
     return artistList
         .map((e) => e.name)
