@@ -14,6 +14,7 @@ import '../../../theme/app_color.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
+import '../../album_detail/album_detail.dart';
 
 class NewAlbumRelease extends StatefulWidget {
   const NewAlbumRelease({ super.key });
@@ -232,17 +233,28 @@ class _NewAlbumReleaseCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           /// 封面
-          album.picUrl!.startsWith('http') ? MusicCover(
-            imageUrl: '${album.picUrl}?param=300y300',
-            width: isSimple ? 150 : 180,
-            height: isSimple ? 150 : 180,
-            radius: YMusicRadius.md,
-          ): Image.asset(
-            album.picUrl,
-            width: isSimple ? 150 : 180,
-            height: isSimple ? 150 : 180,
-            fit: BoxFit.cover,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => AlbumDetail(albumId: album.id),
+                ),
+              );
+            },
+            child: album.picUrl!.startsWith('http') ? MusicCover(
+              imageUrl: '${album.picUrl}?param=300y300',
+              width: isSimple ? 150 : 180,
+              height: isSimple ? 150 : 180,
+              radius: YMusicRadius.md,
+            ): Image.asset(
+              album.picUrl,
+              width: isSimple ? 150 : 180,
+              height: isSimple ? 150 : 180,
+              fit: BoxFit.cover,
+            ),
           ),
+
           const SizedBox(height: YMusicSpacing.md),
           /// 标题
           Padding(

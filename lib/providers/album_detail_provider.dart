@@ -2,50 +2,58 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
-import 'package:yao_music/constants/load_state.dart';
-import 'package:yao_music/theme/app_text.dart';
 
-import '../models/set_list_detail.dart';
-import '../services/set_list_detail_service.dart';
+import '../constants/load_state.dart';
+import '../models/album_detail.dart';
+import '../services/album_detail_service.dart';
 import '../theme/app_color.dart';
 import '../theme/app_space.dart';
+import '../theme/app_text.dart';
+import '../utils/index.dart';
 
-class SetListProvider extends ChangeNotifier {
+class AlbumDetailProvider extends ChangeNotifier {
   /// 页面背景色
   Color bgColor = YMusicColors.background;
-  SetListDetailModel detail = SetListDetailModel(
-    id: 1,
-    name: '这是歌单名称',
-    coverImgUrl: 'lib/assets/image/banner.jpg',
-    description: '这是一大堆表述',
-    updateTime: 123456789,
-    songs: [
-      SetListDetailSongsModel(
-        id: 2,
-        name: '这是歌曲名称',
-        artistList: [
-          ArtistOfSetListSong(
+  AlbumDetailModel detail = AlbumDetailModel(
+      id: 1,
+      name: '这是专辑名称',
+      picUrl: 'lib/assets/image/banner.jpg',
+      description: '这是一大堆表述',
+      publishTime: 123456789,
+      company: '这是出品公司',
+      song: [
+        SongsOfAlbumDetail(
+            id: 2,
+            name: '这是歌曲名称',
+            artistList: [
+              ArtistOfAlbumDetail(
+                  id: 3,
+                  name: '这是歌手名称'
+              ),
+            ],
+            album: AlbumOfAlbumDetail(
+                id: 4,
+                name: '这是专辑名称',
+                picUrl: 'lib/assets/image/banner.jpg'
+            )
+        )
+      ],
+      artistList: [
+        ArtistOfAlbumDetail(
             id: 3,
             name: '这是歌手名称'
-          ),
-        ],
-        album: AlbumOfSetListSong(
-          id: 4,
-          name: '这是专辑名称',
-          picUrl: 'lib/assets/image/banner.jpg'
-        )
-      )
-    ]
+        ),
+      ]
   );
   LoadState loadState = LoadState.loading;
 
   /// 提取封面主色
   Future<void> updateBgColor() async {
-    if (detail.coverImgUrl != null && detail.coverImgUrl!.isNotEmpty) {
+    if (detail.picUrl != null && detail.picUrl!.isNotEmpty) {
       try {
         final paletteGenerator = await PaletteGenerator.fromImageProvider(
           CachedNetworkImageProvider(
-            detail.coverImgUrl ?? '',
+            detail.picUrl ?? '',
             headers: {
               "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
@@ -62,12 +70,12 @@ class SetListProvider extends ChangeNotifier {
   }
 
   /// 加载数据
-  Future<void> loadSetListDetailData(int id) async {
+  Future<void> loadAlbumDetailData(int id) async {
     try {
       bgColor = YMusicColors.background;
       loadState = LoadState.loading;
       notifyListeners();
-      final result = await SetListDetailService.getSetListDetail(id);
+      final result = await AlbumDetailService.getAlbumDetail(id);
       detail = result;
       loadState = LoadState.success;
       await updateBgColor();
@@ -77,7 +85,7 @@ class SetListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> showDescriptionSheet (BuildContext context, String description) async {
+  Future<void> showDescriptionSheet (BuildContext context, AlbumDetailModel description) async {
     final maxHeight = MediaQuery.of(context).size.height * 0.5;
     showModalBottomSheet(
       context: context,
@@ -121,7 +129,7 @@ class SetListProvider extends ChangeNotifier {
                     vertical: 8,
                   ),
                   child: Text(
-                    "歌单简介",
+                    "专辑简介",
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
@@ -141,13 +149,40 @@ class SetListProvider extends ChangeNotifier {
                       24,
                       32,
                     ),
-                    child: Text(
-                      description,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 15,
-                        height: 1.7,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          detail.description,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 15,
+                            height: 1.7,
+                          ),
+                        ),
+                        SizedBox(
+                          height: YMusicSpacing.sm,
+                        ),
+                        Text(
+                          "发行日期：${DateUtil.formatDate(detail.publishTime)}",
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 15,
+                            height: 1.7,
+                          ),
+                        ),
+                        SizedBox(
+                          height: YMusicSpacing.sm,
+                        ),
+                        Text(
+                          "发行公司：${detail.company}",
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 15,
+                            height: 1.7,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -159,7 +194,7 @@ class SetListProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> showSongInfoSheet (BuildContext context, SetListDetailSongsModel song) async {
+  Future<void> showSongInfoSheet (BuildContext context, SongsOfAlbumDetail song) async {
     showModalBottomSheet(
       context: context,
       backgroundColor: YMusicColors.background,
@@ -201,49 +236,16 @@ class SetListProvider extends ChangeNotifier {
                   child: Column(
                     children: [
                       SizedBox(
-                        width: double.infinity,
-                        child: Padding(
-                          padding: EdgeInsetsGeometry.symmetric(
-                            vertical: YMusicSpacing.lg,
-                            horizontal: YMusicSpacing.sm,
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                  CupertinoIcons.music_mic,
-                                  color: YMusicColors.primary,
-                                  size: 25
-                              ),
-                              SizedBox(
-                                width: YMusicSpacing.md,
-                              ),
-                              Text(
-                                  '歌手：${song.artistNames}',
-                                  style: YMusicTextStyles.body,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis
-                              )
-                            ],
-                          ),
-                        )
-                      ),
-                      const Divider(
-                        height: 1,
-                        indent: 0,
-                        endIndent: 0,
-                        color: Colors.white12,
-                      ),
-                      SizedBox(
                           width: double.infinity,
                           child: Padding(
                             padding: EdgeInsetsGeometry.symmetric(
-                              horizontal: YMusicSpacing.sm,
                               vertical: YMusicSpacing.lg,
+                              horizontal: YMusicSpacing.sm,
                             ),
                             child: Row(
                               children: [
                                 Icon(
-                                    CupertinoIcons.square_stack_3d_down_right,
+                                    CupertinoIcons.music_mic,
                                     color: YMusicColors.primary,
                                     size: 25
                                 ),
@@ -251,7 +253,7 @@ class SetListProvider extends ChangeNotifier {
                                   width: YMusicSpacing.md,
                                 ),
                                 Text(
-                                    '专辑：${song.album.name}',
+                                    '歌手：${song.artistNames}',
                                     style: YMusicTextStyles.body,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis
