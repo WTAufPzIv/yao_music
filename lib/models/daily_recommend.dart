@@ -1,7 +1,7 @@
-import 'package:yao_music/models/song_base.dart';
+import 'package:yao_music/models/base/song_base.dart';
 
-import 'album_base.dart';
-import 'artist_base.dart';
+import 'base/album_base.dart';
+import 'base/artist_base.dart';
 
 class AlbumOfDailyRecommend implements AlbumBaseModel {
   /// 专辑id

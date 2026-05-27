@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:yao_music/models/hot_top.dart';
 import 'package:yao_music/models/personalized_set_list.dart';
 import 'package:yao_music/models/rank_list.dart';
-import 'package:yao_music/models/song_base.dart';
+import 'package:yao_music/models/base/song_base.dart';
 
 import '../constants/load_state.dart';
 import '../models/daily_recommend.dart';

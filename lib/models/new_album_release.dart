@@ -1,5 +1,5 @@
-import 'package:yao_music/models/album_base.dart';
-import 'package:yao_music/models/artist_base.dart';
+import 'package:yao_music/models/base/album_base.dart';
+import 'package:yao_music/models/base/artist_base.dart';
 
 class ArtistOfNewAlbumReleaseModel implements ArtistBaseModel {
   /// 歌手id

@@ -1,4 +1,4 @@
-import 'package:yao_music/models/artist_base.dart';
+import 'package:yao_music/models/base/artist_base.dart';
 
 class ArtistModel implements ArtistBaseModel {
   @override
