@@ -432,10 +432,10 @@ class _NewAlbumReleaseCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    album.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: YMusicTextStyles.artistName
+                  album.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: YMusicTextStyles.artistName
                 ),
               ],
             ),
