@@ -17,6 +17,29 @@ class ArtistOfSetListSong {
   }
 }
 
+class AlbumOfSetListSong {
+  /// 专辑id
+  final int id;
+  /// 专辑名称
+  final String name;
+  /// 专辑图片
+  final String picUrl;
+
+  AlbumOfSetListSong({
+    required this.name,
+    required this.id,
+    required this.picUrl
+  });
+
+  factory AlbumOfSetListSong.fromJson(Map<String, dynamic> json) {
+    return AlbumOfSetListSong(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      picUrl: json['picUrl'] ?? '',
+    );
+  }
+}
+
 class SetListDetailSongsModel {
   /// 歌曲id
   final int id;
@@ -24,6 +47,8 @@ class SetListDetailSongsModel {
   final String name;
   /// 歌手信息
   final List<ArtistOfSetListSong> artistList;
+  // 专辑信息
+  final AlbumOfSetListSong album;
   String get artistNames {
     return artistList
         .map((e) => e.name)
@@ -33,7 +58,8 @@ class SetListDetailSongsModel {
   SetListDetailSongsModel({
     required this.id,
     required this.name,
-    required this.artistList
+    required this.artistList,
+    required this.album
   });
 
   factory SetListDetailSongsModel.fromJson(Map<String, dynamic> json) {
@@ -43,6 +69,7 @@ class SetListDetailSongsModel {
       artistList: (json['ar'] as List<dynamic>?)
           ?.map((e) => ArtistOfSetListSong.fromJson(e))
           .toList() ?? [],
+      album: AlbumOfSetListSong.fromJson(json['al'])
     );
   }
 }
