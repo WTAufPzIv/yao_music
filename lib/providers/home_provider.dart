@@ -6,6 +6,7 @@ import 'package:yao_music/models/hot_top.dart';
 import 'package:yao_music/models/personalized_set_list.dart';
 import 'package:yao_music/models/rank_list.dart';
 import 'package:yao_music/models/base/song_base.dart';
+import 'package:yao_music/pages/artist_detail/artist_detail.dart';
 
 import '../constants/load_state.dart';
 import '../models/daily_recommend.dart';
@@ -281,32 +282,43 @@ class HomeProvider extends ChangeNotifier {
                   ),
                   child: Column(
                     children: [
-                      SizedBox(
-                          width: double.infinity,
-                          child: Padding(
-                            padding: EdgeInsetsGeometry.symmetric(
-                              vertical: YMusicSpacing.lg,
-                              horizontal: YMusicSpacing.sm,
+                      InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ArtistDetail(artistId: song.artistList[0].id),
                             ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                    CupertinoIcons.music_mic,
-                                    color: YMusicColors.primary,
-                                    size: 25
-                                ),
-                                SizedBox(
-                                  width: YMusicSpacing.md,
-                                ),
-                                Text(
-                                    '歌手：${song.artistNames}',
-                                    style: YMusicTextStyles.body,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis
-                                )
-                              ],
-                            ),
-                          )
+                          );
+                        },
+                        child: SizedBox(
+                            width: double.infinity,
+                            child: Padding(
+                              padding: EdgeInsetsGeometry.symmetric(
+                                vertical: YMusicSpacing.lg,
+                                horizontal: YMusicSpacing.sm,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                      CupertinoIcons.music_mic,
+                                      color: YMusicColors.primary,
+                                      size: 25
+                                  ),
+                                  SizedBox(
+                                    width: YMusicSpacing.md,
+                                  ),
+                                  Text(
+                                      '歌手：${song.artistNames}',
+                                      style: YMusicTextStyles.body,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
                       ),
                       const Divider(
                         height: 1,
