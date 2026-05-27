@@ -6,6 +6,7 @@ import 'package:yao_music/constants/load_state.dart';
 import 'package:yao_music/theme/app_text.dart';
 
 import '../models/set_list_detail.dart';
+import '../pages/album_detail/album_detail.dart';
 import '../services/set_list_detail_service.dart';
 import '../theme/app_color.dart';
 import '../theme/app_space.dart';
@@ -233,7 +234,17 @@ class SetListProvider extends ChangeNotifier {
                         endIndent: 0,
                         color: Colors.white12,
                       ),
-                      SizedBox(
+                      InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AlbumDetail(albumId: song.album.id),
+                            ),
+                          );
+                        },
+                        child: SizedBox(
                           width: double.infinity,
                           child: Padding(
                             padding: EdgeInsetsGeometry.symmetric(
@@ -259,6 +270,7 @@ class SetListProvider extends ChangeNotifier {
                               ],
                             ),
                           )
+                        ),
                       ),
                       const Divider(
                         height: 1,

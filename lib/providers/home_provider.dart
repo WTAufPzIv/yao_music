@@ -11,6 +11,7 @@ import '../constants/load_state.dart';
 import '../models/daily_recommend.dart';
 import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
+import '../pages/album_detail/album_detail.dart';
 import '../services/home_service.dart';
 import '../theme/app_color.dart';
 import '../theme/app_space.dart';
@@ -313,32 +314,43 @@ class HomeProvider extends ChangeNotifier {
                         endIndent: 0,
                         color: Colors.white12,
                       ),
-                      SizedBox(
-                          width: double.infinity,
-                          child: Padding(
-                            padding: EdgeInsetsGeometry.symmetric(
-                              horizontal: YMusicSpacing.sm,
-                              vertical: YMusicSpacing.lg,
+                      InkWell(
+                        borderRadius: BorderRadius.circular(12),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => AlbumDetail(albumId: song.album.id),
                             ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                    CupertinoIcons.square_stack_3d_down_right,
-                                    color: YMusicColors.primary,
-                                    size: 25
-                                ),
-                                SizedBox(
-                                  width: YMusicSpacing.md,
-                                ),
-                                Text(
-                                    '专辑：${song.album.name}',
-                                    style: YMusicTextStyles.body,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis
-                                )
-                              ],
-                            ),
-                          )
+                          );
+                        },
+                        child: SizedBox(
+                            width: double.infinity,
+                            child: Padding(
+                              padding: EdgeInsetsGeometry.symmetric(
+                                horizontal: YMusicSpacing.sm,
+                                vertical: YMusicSpacing.lg,
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                      CupertinoIcons.square_stack_3d_down_right,
+                                      color: YMusicColors.primary,
+                                      size: 25
+                                  ),
+                                  SizedBox(
+                                    width: YMusicSpacing.md,
+                                  ),
+                                  Text(
+                                      '专辑：${song.album.name}',
+                                      style: YMusicTextStyles.body,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis
+                                  )
+                                ],
+                              ),
+                            )
+                        ),
                       ),
                       const Divider(
                         height: 1,
