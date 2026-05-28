@@ -45,7 +45,6 @@ class _ArtistSongAllState extends State<ArtistSongAll> {
     final provider = context.watch<ArtistAllSongProvider>();
     final list = provider.list;
     final bool loading = provider.loading == LoadState.loading;
-    final ArtistAllSongOrderType order = provider.order;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(

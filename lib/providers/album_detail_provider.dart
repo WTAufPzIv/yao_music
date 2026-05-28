@@ -327,10 +327,7 @@ class AlbumDetailProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> _showArtistPickerSheet(
-      BuildContext context,
-      SongsOfAlbumDetail song,
-      ) async {
+  Future<void> _showArtistPickerSheet(BuildContext context, SongsOfAlbumDetail song) async {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,

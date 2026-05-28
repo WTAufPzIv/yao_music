@@ -13,6 +13,7 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_space.dart';
 import '../../theme/app_text.dart';
 import '../album_detail/album_detail.dart';
+import 'artist_album_all.dart';
 import 'artist_song_all.dart';
 
 class ArtistDetail extends StatefulWidget {
@@ -297,12 +298,25 @@ class _ArtistDetailState extends State<ArtistDetail> {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (_) => const NewAlbumReleaseFull(),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => MultiProvider(
+                              providers: [
+                                ChangeNotifierProvider(
+                                  create: (_) => ArtistDetailProvider(),
+                                ),
+                                ChangeNotifierProvider(
+                                  create: (_) => ArtistAllAlbumProvider(detail.id)..init(),
+                                ),
+                              ],
+                              child: ArtistAlbumAll(
+                                artistId: detail.id,
+                                artistName: detail.name,
+                              ),
+                            ),
+                          ),
+                        );
                       },
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,

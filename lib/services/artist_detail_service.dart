@@ -12,4 +12,9 @@ class ArtistDetailService {
     final result = await ArtistDetailApi.fetchArtistAllSong(id, params);
     return result;
   }
+  /// 获取歌手专辑分页
+  static Future<ArtistAllAlbumModel> getArtistAllAlbumPage(int id, ArtistAllAlbumDTO params) async {
+    final result = await ArtistDetailApi.fetchArtistAllAlbum(id, params);
+    return result;
+  }
 }

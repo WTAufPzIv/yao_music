@@ -22,14 +22,20 @@ class ArtistDetailApi {
     detail['introduction'] = response4.data['introduction'];
     return ArtistDetailModel.fromJson(detail);
   }
-
   // 获取歌曲分页
   static Future<ArtistAllSongModel> fetchArtistAllSong(int id, ArtistAllSongDTO params) async {
-    print(params.order.name);
     final results = await Future.wait([
       dio.get('$baseUrl/artist/songs?id=$id&order=${params.order.name}&limit=${params.limit}&offset=${params.offset}'),
     ]);
     final response = results[0];
     return ArtistAllSongModel.fromJson(response.data);
+  }
+  // 获取专辑分页
+  static Future<ArtistAllAlbumModel> fetchArtistAllAlbum(int id, ArtistAllAlbumDTO params) async {
+    final results = await Future.wait([
+      dio.get('$baseUrl/artist/album?id=$id&order=${params.order.name}&limit=${params.limit}&offset=${params.offset}'),
+    ]);
+    final response = results[0];
+    return ArtistAllAlbumModel.fromJson(response.data);
   }
 }

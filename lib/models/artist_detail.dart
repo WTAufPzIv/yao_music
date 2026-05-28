@@ -172,3 +172,27 @@ class ArtistAllSongDTO extends PageDTO {
   ArtistAllSongOrderType order = ArtistAllSongOrderType.hot;
   ArtistAllSongDTO(this.order, {required super.limit, required super.offset});
 }
+
+class ArtistAllAlbumModel {
+  final List<AlbumOfArtistDetail> album;
+  final bool more;
+
+  ArtistAllAlbumModel({
+    required this.album,
+    required this.more
+  });
+
+  factory ArtistAllAlbumModel.fromJson(Map<String, dynamic> json) {
+    return ArtistAllAlbumModel(
+        album: (json['hotAlbums'] as List<dynamic>?)
+            ?.map((e) => AlbumOfArtistDetail.fromJson(e))
+            .toList() ?? [],
+        more: json['more']
+    );
+  }
+}
+
+class ArtistAllAlbumDTO extends PageDTO {
+  ArtistAllSongOrderType order = ArtistAllSongOrderType.hot;
+  ArtistAllAlbumDTO(this.order, {required super.limit, required super.offset});
+}

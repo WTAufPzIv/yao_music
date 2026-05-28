@@ -338,3 +338,26 @@ class ArtistAllSongProvider extends BasePageProvider<SongsOfArtistDetail> {
     return PageData(list: result.song, more: result.more);
   }
 }
+
+class ArtistAllAlbumProvider extends BasePageProvider<AlbumOfArtistDetail> {
+  final int artistId;
+  ArtistAllSongOrderType order = ArtistAllSongOrderType.hot;
+
+  ArtistAllAlbumProvider(this.artistId);
+
+  void changeOrder(ArtistAllSongOrderType newOrder) {
+    notifyListeners();
+    order = newOrder;
+    notifyListeners();
+    refresh();
+  }
+
+  @override
+  Future<PageData<AlbumOfArtistDetail>> fetchData({
+    required int offset,
+    required int limit,
+  }) async {
+    final result = await ArtistDetailService.getArtistAllAlbumPage(artistId, ArtistAllAlbumDTO(order, offset: offset, limit: limit));
+    return PageData(list: result.album, more: result.more);
+  }
+}
