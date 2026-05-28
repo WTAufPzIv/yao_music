@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_color.dart';
 import '../home/home_wrapper.dart';
 import '../search/search_page.dart';
+import '../search/search_wrapper.dart';
 import '../user/user_page.dart';
 import 'main_page.dart';
 
@@ -11,7 +12,7 @@ class MainPageState extends State<MainPage> {
 
   final List<Widget> pages = [
     const HomePageWrapper(),
-    const SearchPage(),
+    const SearchPageWrapper(),
     const UserPage(),
   ];
 
