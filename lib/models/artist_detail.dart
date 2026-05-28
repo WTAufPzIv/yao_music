@@ -1,4 +1,5 @@
 import 'package:yao_music/models/base/artist_base.dart';
+import 'package:yao_music/models/base/page_base.dart';
 
 import 'base/album_base.dart';
 import 'base/song_base.dart';
@@ -80,6 +81,23 @@ class SongsOfArtistDetail implements SongBaseModel {
   }
 }
 
+class IntroductionItem {
+  final String ti;
+  final String text;
+
+  IntroductionItem({
+    required this.ti,
+    required this.text,
+  });
+
+  factory IntroductionItem.fromJson(Map<String, dynamic> json) {
+    return IntroductionItem(
+      ti: json['ti'] ?? 0,
+      text: json['txt'] ?? '',
+    );
+  }
+}
+
 class ArtistDetailModel implements ArtistBaseModel {
   @override
   final int id;
@@ -90,6 +108,7 @@ class ArtistDetailModel implements ArtistBaseModel {
   final String briefDesc;
   final List<SongsOfArtistDetail> song;
   final List<AlbumOfArtistDetail> album;
+  final List<IntroductionItem> introduction;
   String get joinTransNames {
     return transNames.join(' / ');
   }
@@ -102,6 +121,7 @@ class ArtistDetailModel implements ArtistBaseModel {
     required this.briefDesc,
     required this.song,
     required this.album,
+    required this.introduction
   });
 
   factory ArtistDetailModel.fromJson(Map<String, dynamic> json) {
@@ -111,6 +131,9 @@ class ArtistDetailModel implements ArtistBaseModel {
       cover: json['cover'] ?? '',
       transNames: json['transNames'] ?? '',
       briefDesc: json['briefDesc'] ?? '',
+      introduction: (json['introduction'] as List<dynamic>?)
+          ?.map((e) => IntroductionItem.fromJson(e))
+          .toList() ?? [],
       song: (json['song'] as List<dynamic>?)
           ?.map((e) => SongsOfArtistDetail.fromJson(e))
           .toList() ?? [],
@@ -119,4 +142,33 @@ class ArtistDetailModel implements ArtistBaseModel {
           .toList() ?? [],
     );
   }
+}
+
+class ArtistAllSongModel {
+  final List<SongsOfArtistDetail> song;
+  final bool more;
+
+  ArtistAllSongModel({
+    required this.song,
+    required this.more
+  });
+
+  factory ArtistAllSongModel.fromJson(Map<String, dynamic> json) {
+    return ArtistAllSongModel(
+      song: (json['songs'] as List<dynamic>?)
+          ?.map((e) => SongsOfArtistDetail.fromJson(e))
+          .toList() ?? [],
+      more: json['more']
+    );
+  }
+}
+
+enum ArtistAllSongOrderType {
+  hot,
+  time
+}
+
+class ArtistAllSongDTO extends PageDTO {
+  ArtistAllSongOrderType order = ArtistAllSongOrderType.hot;
+  ArtistAllSongDTO(this.order, {required super.limit, required super.offset});
 }

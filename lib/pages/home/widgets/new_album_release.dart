@@ -9,6 +9,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../components/music_cover.dart';
 import '../../../constants/load_state.dart';
 import '../../../models/new_album_release.dart';
+import '../../../providers/album_detail_provider.dart';
 import '../../../providers/home_provider.dart';
 import '../../../theme/app_color.dart';
 import '../../../theme/app_radius.dart';
@@ -238,7 +239,10 @@ class _NewAlbumReleaseCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => AlbumDetail(albumId: album.id),
+                  builder: (_) => ChangeNotifierProvider(
+                    create: (_) => AlbumDetailProvider(),
+                    child: AlbumDetail(albumId: album.id),
+                  ),
                 ),
               );
             },

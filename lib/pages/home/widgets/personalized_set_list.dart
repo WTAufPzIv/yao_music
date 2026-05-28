@@ -10,6 +10,7 @@ import 'package:yao_music/models/personalized_set_list.dart';
 import '../../../components/music_cover.dart';
 import '../../../constants/load_state.dart';
 import '../../../providers/home_provider.dart';
+import '../../../providers/set_list_provider.dart';
 import '../../../theme/app_color.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_space.dart';
@@ -254,7 +255,12 @@ class _PersonalizedSetListCard extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => SetListDetail(setListId: personalized.id),
+                    builder: (_) => ChangeNotifierProvider(
+                      create: (_) => SetListProvider(),
+                      child: SetListDetail(
+                        setListId: personalized.id,
+                      ),
+                    ),
                   ),
                 );
               },

@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -6,9 +5,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../components/music_cover.dart';
 import '../../../constants/load_state.dart';
-import '../../../models/new_album_release.dart';
 import '../../../models/rank_list.dart';
 import '../../../providers/home_provider.dart';
+import '../../../providers/set_list_provider.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
@@ -117,7 +116,12 @@ class _RankListCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => SetListDetail(setListId: rank.id),
+                  builder: (_) => ChangeNotifierProvider(
+                    create: (_) => SetListProvider(),
+                    child: SetListDetail(
+                      setListId: rank.id
+                    ),
+                  ),
                 ),
               );
             },

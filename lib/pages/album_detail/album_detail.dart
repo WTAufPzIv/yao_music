@@ -42,10 +42,19 @@ class _AlbumDetailState extends State<AlbumDetail> {
       await context.read<AlbumDetailProvider>().loadAlbumDetailData(widget.albumId);
     });
     /// 监听滚动
-    _scrollController.addListener(() {
-      setState(() {
-        scrollOffset = _scrollController.offset;
-      });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    setState(() {
+      scrollOffset = _scrollController.offset;
     });
   }
 
@@ -79,7 +88,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
                         children: [
                           /// 背景封面
                           CachedNetworkImage(
-                            imageUrl: detail.picUrl,
+                            imageUrl: '${detail.picUrl}?param=400y400',
                             width: 520,
                             height: 520,
                             httpHeaders: { "user-agent": 'windows' },
@@ -124,7 +133,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
                                       borderRadius:
                                       BorderRadius.circular(16),
                                       child: Image.network(
-                                        detail.picUrl ?? '',
+                                        '${detail.picUrl ?? ''}?param=800y800',
                                         fit: BoxFit.cover,
                                       ),
                                     ),

@@ -7,12 +7,13 @@ import 'package:yao_music/providers/artist_detail_provider.dart';
 
 import '../../components/music_cover.dart';
 import '../../constants/load_state.dart';
-import '../../models/daily_recommend.dart';
+import '../../providers/album_detail_provider.dart';
 import '../../theme/app_color.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_space.dart';
 import '../../theme/app_text.dart';
 import '../album_detail/album_detail.dart';
+import 'artist_song_all.dart';
 
 class ArtistDetail extends StatefulWidget {
   final int artistId;
@@ -46,10 +47,19 @@ class _ArtistDetailState extends State<ArtistDetail> {
       await context.read<ArtistDetailProvider>().loadArtistDetailData(widget.artistId);
     });
     /// 监听滚动
-    _scrollController.addListener(() {
-      setState(() {
-        scrollOffset = _scrollController.offset;
-      });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    setState(() {
+      scrollOffset = _scrollController.offset;
     });
   }
 
@@ -84,7 +94,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                     children: [
                       /// 背景封面
                       CachedNetworkImage(
-                        imageUrl: detail.cover,
+                        imageUrl: '${detail.cover}?param=800y800',
                         width: 350,
                         height: 350,
                         httpHeaders: { "user-agent": 'windows' },
@@ -97,7 +107,8 @@ class _ArtistDetailState extends State<ArtistDetail> {
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              YMusicColors.background.withOpacity(0.05),
+                              YMusicColors.background.withOpacity(0.01),
+                              YMusicColors.background.withOpacity(0.10),
                               YMusicColors.background.withOpacity(0.95),
                             ],
                           ),
@@ -110,7 +121,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              /// 标题
+                              /// 歌手名字
                               Text(
                                 detail.name ?? '',
                                 textAlign: TextAlign.center,
@@ -138,7 +149,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                                       IconButton(
                                         icon: const Icon(
                                           Icons.arrow_back_ios_new,
-                                          color: YMusicColors.primary,
+                                          color: Colors.white,
                                         ),
                                         onPressed: () {
                                           Navigator.pop(context);
@@ -166,6 +177,12 @@ class _ArtistDetailState extends State<ArtistDetail> {
                                           ),
                                         ),
                                       ),
+                                      IconButton(onPressed: () {
+                                        provider.showDescriptionSheet(context, detail);
+                                      }, icon: const Icon(
+                                        Icons.more_vert,
+                                        color: Colors.white,
+                                      ))
                                     ],
                                   ),
                                 ),
@@ -182,20 +199,33 @@ class _ArtistDetailState extends State<ArtistDetail> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: YMusicSpacing.sm),
-                  /// 标题
+                  const SizedBox(height: YMusicSpacing.lg),
+                  /// 热门歌曲
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: YMusicSpacing.lg,
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder: (_) => const NewAlbumReleaseFull(),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => MultiProvider(
+                              providers: [
+                                ChangeNotifierProvider(
+                                  create: (_) => ArtistDetailProvider(),
+                                ),
+                                ChangeNotifierProvider(
+                                  create: (_) => ArtistAllSongProvider(detail.id)..init(),
+                                ),
+                              ],
+                              child: ArtistSongAll(
+                                artistId: detail.id,
+                                artistName: detail.name,
+                              ),
+                            ),
+                          ),
+                        );
                       },
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -214,12 +244,13 @@ class _ArtistDetailState extends State<ArtistDetail> {
                       )
                     )
                   ),
+                  SizedBox(height: YMusicSpacing.lg),
                   Padding(
                     padding: const EdgeInsets.only(
                       left: YMusicSpacing.lg,
                     ),
                     child: SizedBox(
-                      height: 400,
+                      height: 324,
                       child: PageView.builder(
                         controller: controller,
                         padEnds: false,
@@ -237,6 +268,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                               ),
                               child: ListView.separated(
                                 physics: const NeverScrollableScrollPhysics(),
+                                padding: EdgeInsets.zero,
                                 itemCount: pageSongs.length,
                                 separatorBuilder: (_, __) => Divider(
                                   color: Colors.white.withOpacity(0.10),
@@ -247,7 +279,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                                   return _MusicItem(
                                       song: song,
                                       loading: loading,
-                                      // openSongInfo: (DailyRecommendModel song) => provider.showSongInfoSheet(context, song)
+                                      openSongInfo: (SongsOfArtistDetail song) => provider.showSongInfoSheet(context, song)
                                   );
                                 },
                               ),
@@ -257,6 +289,8 @@ class _ArtistDetailState extends State<ArtistDetail> {
                       ),
                     ),
                   ),
+                  SizedBox(height: YMusicSpacing.xxxl),
+                  /// 热门专辑
                   Padding(
                     padding: const EdgeInsets.symmetric(
                       horizontal: YMusicSpacing.lg,
@@ -320,11 +354,11 @@ class _ArtistDetailState extends State<ArtistDetail> {
 class _MusicItem extends StatelessWidget {
   final SongsOfArtistDetail song;
   final bool loading;
-  // final Function(DailyRecommendModel song) openSongInfo;
+  final Function(SongsOfArtistDetail song) openSongInfo;
   const _MusicItem({
     required this.song,
     required this.loading,
-    // required this.openSongInfo
+    required this.openSongInfo
   });
 
   @override
@@ -372,7 +406,7 @@ class _MusicItem extends StatelessWidget {
           ),
           const SizedBox(width: YMusicSpacing.md),
           IconButton(onPressed: () {
-            // openSongInfo(song);
+            openSongInfo(song);
           }, icon: const Icon(
             Icons.more_vert,
             color: Colors.white,
@@ -386,17 +420,15 @@ class _MusicItem extends StatelessWidget {
 class _NewAlbumReleaseCard extends StatelessWidget {
   final AlbumOfArtistDetail album;
   final bool loading;
-  final bool isSimple;
   const _NewAlbumReleaseCard({
     required this.album,
     required this.loading,
-    this.isSimple = true
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: isSimple ? 150 : 180,
+      width: 150,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -406,19 +438,22 @@ class _NewAlbumReleaseCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => AlbumDetail(albumId: album.id),
+                  builder: (_) => ChangeNotifierProvider(
+                    create: (_) => AlbumDetailProvider(),
+                    child: AlbumDetail(albumId: album.id),
+                  ),
                 ),
               );
             },
             child: album.picUrl!.startsWith('http') ? MusicCover(
               imageUrl: '${album.picUrl}?param=300y300',
-              width: isSimple ? 150 : 180,
-              height: isSimple ? 150 : 180,
+              width: 150,
+              height: 150,
               radius: YMusicRadius.md,
             ): Image.asset(
               album.picUrl,
-              width: isSimple ? 150 : 180,
-              height: isSimple ? 150 : 180,
+              width: 150,
+              height: 150,
               fit: BoxFit.cover,
             ),
           ),
@@ -427,6 +462,7 @@ class _NewAlbumReleaseCard extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(
               left: YMusicSpacing.xs,
+              right: YMusicSpacing.xs,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

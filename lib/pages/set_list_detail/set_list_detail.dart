@@ -41,10 +41,19 @@ class _SetListDetailState extends State<SetListDetail> {
       await context.read<SetListProvider>().loadSetListDetailData(widget.setListId);
     });
     /// 监听滚动
-    _scrollController.addListener(() {
-      setState(() {
-        scrollOffset = _scrollController.offset;
-      });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    setState(() {
+      scrollOffset = _scrollController.offset;
     });
   }
 

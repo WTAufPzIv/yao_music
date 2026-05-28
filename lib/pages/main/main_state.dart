@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_color.dart';
-import '../home/home_page.dart';
+import '../home/home_wrapper.dart';
 import '../search/search_page.dart';
 import '../user/user_page.dart';
 import 'main_page.dart';
@@ -10,7 +10,7 @@ class MainPageState extends State<MainPage> {
   int currentIndex = 0;
 
   final List<Widget> pages = [
-    const HomePage(),
+    const HomePageWrapper(),
     const SearchPage(),
     const UserPage(),
   ];
@@ -50,7 +50,6 @@ class MainPageState extends State<MainPage> {
             icon: Icon(Icons.person),
             label: '我的',
           ),
-
         ],
       ),
     );
