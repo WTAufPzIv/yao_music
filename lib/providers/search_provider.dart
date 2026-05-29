@@ -8,11 +8,19 @@ class SearchProvider extends BasePageProvider<SearchResultItem> {
   SearchPlatform platform = SearchPlatform.netease;
 
   void changeKeyWords (String newLeyWord) {
+    notifyListeners();
     keywords = newLeyWord;
+    notifyListeners();
+    refresh();
   }
 
   void changePlatForm (SearchPlatform newPlatForm) {
+    notifyListeners();
     platform = newPlatForm;
+    notifyListeners();
+    if (keywords.isNotEmpty) {
+      refresh();
+    }
   }
 
   @override

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../api/search_api.dart';
 import '../models/search.dart';
 

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:yao_music/constants/load_state.dart';
 import 'package:yao_music/providers/search_provider.dart';
+import 'package:yao_music/theme/app_space.dart';
+import 'package:yao_music/theme/app_text.dart';
 
-import '../../models/artist_detail.dart';
 import '../../models/search.dart';
-import '../../providers/artist_detail_provider.dart';
 
 class SearchResult extends StatefulWidget {
   const SearchResult({super.key});
@@ -17,6 +17,9 @@ class SearchResult extends StatefulWidget {
 
 class _SearchResultState extends State<SearchResult> {
   final ScrollController _controller = ScrollController();
+  final TextEditingController _textController = TextEditingController();
+
+  String _query = '';
 
   @override
   void initState() {
@@ -38,6 +41,12 @@ class _SearchResultState extends State<SearchResult> {
     }
   }
 
+  void _onSearchSubmit(SearchProvider provider, String val) {
+    if (val == null || val.isEmpty) return;
+    _query = val;
+    provider.changeKeyWords(_query);
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SearchProvider>();
@@ -52,23 +61,45 @@ class _SearchResultState extends State<SearchResult> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
+            child: CupertinoSearchTextField(
+              controller: _textController,
+              autofocus: false,
+              style: const TextStyle(color: Colors.white),
+              placeholder: '搜索单曲、歌手、专辑',
+              placeholderStyle: const TextStyle(color: Color(0xFF8E8E93)),
+              prefixIcon: const Icon(CupertinoIcons.search, color: Color(0xFF8E8E93), size: 18),
+              suffixIcon: const Icon(CupertinoIcons.xmark_circle_fill, color: Color(0xFF8E8E93), size: 18),
+              backgroundColor: const Color(0xFF1C1C1E),
+              borderRadius: BorderRadius.circular(14),
+              onSubmitted: (String val) => _onSearchSubmit(provider, val),
+            ),
+          ),
           _buildSortBar(provider),
           const Divider(height: 1, color: Colors.white12),
           Expanded(
-              child: list.isEmpty && loading
+              child: _query.isEmpty ? _EmptyHint() : list.isEmpty && loading
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                controller: _controller,
-                physics: const AlwaysScrollableScrollPhysics(),
-                itemCount: list.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == list.length) {
-                    return _buildBottomLoader(provider);
-                  }
-                  final song = list[index];
-                  return _buildSongItem(song, artistDetailProvider);
-                },
-              )
+                  : list.isEmpty
+                    ? _NoResultView(query: _query)
+                    :ListView.separated(
+                      controller: _controller,
+                      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+                      padding: const EdgeInsets.fromLTRB(16, 6, 16, 20),
+                      itemCount: list.length + 1,
+                      separatorBuilder: (_, __) => Divider(
+                        color: Colors.white.withOpacity(0.10),
+                        height: YMusicSpacing.xxl,
+                      ),
+                      itemBuilder: (context, index) {
+                        if (index == list.length) {
+                          return _buildBottomLoader(provider);
+                        }
+                        final item = list[index];
+                        return _buildResultItem(item);
+                      },
+                    )
           ),
         ],
       ),
@@ -126,43 +157,38 @@ class _SearchResultState extends State<SearchResult> {
     );
   }
 
-  Widget _buildSongItem(SongsOfArtistDetail song, ArtistDetailProvider provider) {
-    return ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            '${song.album.picUrl}?param=100y100',
-            width: 56,
-            height: 56,
-            fit: BoxFit.cover,
+  Widget _buildResultItem(SearchResultItem result) {
+    return Padding(
+      padding: EdgeInsetsGeometry.symmetric(
+        horizontal: YMusicSpacing.md
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            result.name,
+            style: YMusicTextStyles.bodyLarge,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
-        ),
-        title: Text(
-          song.name,
-          style: const TextStyle(color: Colors.white, fontSize: 16),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Text(
-          song.artistNames,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: Colors.white54, fontSize: 13),
-        ),
-        trailing: IconButton(onPressed: () {
-          provider.showSongInfoSheet(context, song);
-        }, icon: const Icon(
-          Icons.more_vert,
-          color: Colors.white,
-        ))
-      // onTap: () {
-      //   // 播放 / 进入详情
-      // },
+          SizedBox(
+            height: YMusicSpacing.xs,
+          ),
+          Text(
+            result.artistNames,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: YMusicTextStyles.bodySmall,
+          )
+        ],
+        // onTap: () {
+        //   // 播放 / 进入详情
+        // },
+      )
     );
   }
 
-  Widget _buildBottomLoader(ArtistAllSongProvider provider) {
+  Widget _buildBottomLoader(SearchProvider provider) {
     if (provider.list.isEmpty) return const SizedBox.shrink();
 
     if (provider.more) {
@@ -182,6 +208,79 @@ class _SearchResultState extends State<SearchResult> {
           style: TextStyle(color: Colors.white54),
         ),
       ),
+    );
+  }
+}
+
+class _NoResultView extends StatelessWidget {
+  final String query;
+
+  const _NoResultView({required this.query});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 76,
+              height: 76,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1C1C1E),
+                borderRadius: BorderRadius.circular(22),
+              ),
+              child: const Icon(Icons.search_off, color: Color(0xFF8E8E93), size: 34),
+            ),
+            const SizedBox(height: 18),
+            Text(
+              '没有找到“$query”',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              '换个关键词试试，或者切换到其他平台。',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Color(0xFF8E8E93), fontSize: 13, height: 1.4),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyHint extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: YMusicSpacing.xxxl,
+        ),
+        const Text(
+          '开始搜索',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          '搜索单曲、歌手或专辑',
+          style: TextStyle(color: Color(0xFF8E8E93), fontSize: 13, height: 1.4),
+        ),
+        const SizedBox(height: 22)
+      ],
     );
   }
 }

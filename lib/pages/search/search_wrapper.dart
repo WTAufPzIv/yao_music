@@ -10,7 +10,7 @@ class SearchPageWrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => SearchProvider(),
-      child: const SearchResult(),
+      child: SearchResult(),
     );
   }
 }

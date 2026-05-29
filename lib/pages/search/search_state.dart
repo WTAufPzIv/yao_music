@@ -4,7 +4,7 @@ import '../../theme/app_color.dart';
 import '../../theme/app_space.dart';
 import '../../theme/app_text.dart';
 
-class SearchPageState extends State<SearchPage> {
+class SearchPageState extends State<SearchResult> {
   String markPageName = '这是搜索';
 
   @override

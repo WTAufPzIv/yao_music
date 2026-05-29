@@ -1,10 +1,13 @@
 import 'package:yao_music/models/base/page_base.dart';
 
 class SearchResultItem {
-  final int id;
+  final String id;
   final String name;
-  final List<String> artist;
+  final List<dynamic> artist;
   final String album;
+  String get artistNames {
+    return artist.join(' / ');
+  }
 
   SearchResultItem({
     required this.id,
@@ -14,12 +17,13 @@ class SearchResultItem {
   });
 
   factory SearchResultItem.fromJson(Map<String, dynamic> json) {
-    return SearchResultItem(
-      id: json['id'] ?? 0,
+    final SearchResultItem temp = SearchResultItem(
+      id: json['id'] ?? '0',
       name: json['name'] ?? '',
       album: json['album'] ?? '',
-      artist: json['artist']
+      artist: (json['artist'] as List<dynamic>).toList(),
     );
+    return temp;
   }
 }
 
@@ -31,11 +35,12 @@ class SearchModel {
   });
 
   factory SearchModel.fromJson(Map<String, dynamic> json) {
-    return SearchModel(
+    final SearchModel temp = SearchModel(
       search: (json['search'] as List<dynamic>?)
           ?.map((e) => SearchResultItem.fromJson(e))
           .toList() ?? [],
     );
+    return temp;
   }
 }
 
