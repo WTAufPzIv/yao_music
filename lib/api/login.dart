@@ -1,18 +1,14 @@
 import '../models/login.dart';
 import 'base/dio_http.dart';
-import 'home_api.dart' as Http;
 
 class LoginApi {
   /// 登录手机号密码
   static Future<UserModel> fetchLoginPP(LoginPPDTO params) async {
     final results = await DioHttp.dio.get(
-      '/login/cellphone?phone=${params.phone}&password=${params.password}',
+      '/login/cellphone?phone=${params.phone}&password=${params.password}&realIP=116.25.146.177',
     );
-    print(results.runtimeType);
-    print(results.toString());
-    print(results.data);
     if (results.data?['data']?['profile'] != null) {
-      return UserModel.fromJson(results.data?.data?.profile);
+      return UserModel.fromJson(results.data?['data']?['profile']);
     } else {
       return UserModel(
         userId: 0,
@@ -50,6 +46,8 @@ class LoginApi {
   // 获取登陆状态
   static Future<LoginStatusModel> fetchLoginStatus() async {
     final result1 = await DioHttp.dio.get('/login/status');
+    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@');
+    print(result1);
     if (result1.data?['data']?['profile']?['userId'] != null) {
       final result2 = await DioHttp.dio.get('/user/playlist?uid=${result1.data?['data']?['profile']?['userId']}');
       return LoginStatusModel.fromJson({

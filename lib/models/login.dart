@@ -63,7 +63,7 @@ class UserSetListModel {
     return UserSetListModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
-      picUrl: json['picUrl'] ?? '',
+      picUrl: json['coverImgUrl'] ?? '',
     );
   }
 }

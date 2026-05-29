@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yao_music/constants/load_state.dart';
 
 import '../../models/login.dart';
 import '../../providers/login_provider.dart';
@@ -20,14 +21,14 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   final phoneController = TextEditingController();
   final codeController = TextEditingController();
   final passwordController = TextEditingController();
+  final cookieController = TextEditingController();
 
   bool passwordVisible = false;
-  bool loading = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -35,6 +36,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     _tabController.dispose();
     phoneController.dispose();
     codeController.dispose();
+    cookieController.dispose();
     passwordController.dispose();
     super.dispose();
   }
@@ -55,20 +57,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     final captcha = codeController.text.trim();
     if (phone.isEmpty || captcha.isEmpty) return;
 
-    await provider.loadLoginPC(LoginPCDTO(
+    UserModel loginRes = await provider.loadLoginPC(LoginPCDTO(
         phone: phone,
         captcha: captcha
-    ));
-  }
-
-  Future<void> _loginByPassword(LoginProvider provider) async {
-    final phone = phoneController.text.trim();
-    final password = passwordController.text.trim();
-    if (phone.isEmpty || password.isEmpty) return;
-
-    UserModel loginRes = await provider.loadLoginPP(LoginPPDTO(
-      phone: phone,
-      password: password
     ));
 
     if (loginRes.userId > 0) {
@@ -79,6 +70,46 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('登录失败：${loginRes.nickname}')),
       );
+    }
+  }
+
+  Future<void> _loginByPassword(LoginProvider provider) async {
+    final phone = phoneController.text.trim();
+    final password = passwordController.text.trim();
+    if (phone.isEmpty || password.isEmpty) return;
+    
+    try {
+      UserModel loginRes = await provider.loadLoginPP(LoginPPDTO(
+          phone: phone,
+          password: password
+      ));
+
+      if (loginRes.userId > 0) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('登录成功')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('登录失败：${loginRes.nickname}')),
+        );
+      }
+    } catch(e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> _loginByCookie(LoginProvider provider) async {
+    final cookie = cookieController.text.replaceAll('set-cookie:', '').replaceAll('Set-Cookie:', '').trim();
+    if (cookie.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请输入Cookie')),
+      );
+      return;
+    }
+    try {
+      await provider.loadLoginCookie(cookie);
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -210,6 +241,13 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                           ),
                                         ),
                                       ),
+                                      Tab(
+                                        child: SizedBox.expand(
+                                          child: Center(
+                                            child: Text('Cookie登录'),
+                                          ),
+                                        ),
+                                      ),
                                     ],
                                   )
                                 ),
@@ -221,6 +259,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     children: [
                                       _buildCaptchaLogin(provider),
                                       _buildPasswordLogin(provider),
+                                      _buildCookieLogin(provider),
                                     ],
                                   ),
                                 ),
@@ -241,6 +280,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   }
 
   Widget _buildCaptchaLogin(LoginProvider provider) {
+    final loginLoadingState = provider.loginLoadingState == LoadState.loading;
     return Column(
       children: [
         _input(
@@ -273,7 +313,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                     borderRadius: BorderRadius.circular(18),
                   ),
                 ),
-                onPressed: loading ? null : () => _sendCaptcha(provider),
+                onPressed: loginLoadingState ? null : () => _sendCaptcha(provider),
                 child: const Text('发送'),
               ),
             ),
@@ -281,14 +321,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         ),
         const Spacer(),
         _loginButton(
-          text: loading ? '登录中...' : '登录',
-          onTap: loading ? null : () => _loginByCaptcha(provider),
+          text: loginLoadingState ? '登录中...' : '登录',
+          onTap: loginLoadingState ? null : () => _loginByCaptcha(provider),
         ),
       ],
     );
   }
 
   Widget _buildPasswordLogin(LoginProvider provider) {
+    final loginLoadingState = provider.loginLoadingState == LoadState.loading;
     return Column(
       children: [
         _input(
@@ -314,8 +355,59 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         ),
         const Spacer(),
         _loginButton(
-          text: loading ? '登录中...' : '登录',
-          onTap: loading ? null : () => _loginByPassword(provider),
+          text: loginLoadingState ? '登录中...' : '登录',
+          onTap: loginLoadingState ? null : () => _loginByPassword(provider),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCookieLogin(LoginProvider provider) {
+    final loginLoadingState =
+        provider.loginLoadingState == LoadState.loading;
+    return Column(
+      children: [
+        Container(
+          height: 160,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: TextField(
+            controller: cookieController,
+            maxLines: null,
+            expands: true,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 14,
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.all(18),
+              hintText: '请粘贴网易云Cookie',
+              hintStyle: TextStyle(
+                color: Colors.white.withOpacity(0.4),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            '支持 MUSIC_U / __csrf 等完整 Cookie',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.45),
+              fontSize: 12,
+            ),
+          ),
+        ),
+        const Spacer(),
+        _loginButton(
+          text: loginLoadingState ? '登录中...' : 'Cookie登录',
+          onTap: loginLoadingState
+              ? null
+              : () => _loginByCookie(provider),
         ),
       ],
     );

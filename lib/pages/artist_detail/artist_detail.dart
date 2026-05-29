@@ -139,56 +139,56 @@ class _ArtistDetailState extends State<ArtistDetail> {
                         left: 0,
                         right: 0,
                         child: Container(
-                            color: YMusicColors.background.withOpacity(collapseProgress),
-                            child: Column(
-                              children: [
-                                SizedBox(height: MediaQuery.of(context).padding.top),
-                                SizedBox(
-                                  height: kToolbarHeight,
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        icon: const Icon(
-                                          Icons.arrow_back_ios_new,
-                                          color: Colors.white,
-                                        ),
-                                        onPressed: () {
-                                          Navigator.pop(context);
-                                        },
+                          color: YMusicColors.background.withOpacity(collapseProgress),
+                          child: Column(
+                            children: [
+                              SizedBox(height: MediaQuery.of(context).padding.top),
+                              SizedBox(
+                                height: kToolbarHeight,
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(
+                                        Icons.arrow_back_ios_new,
+                                        color: Colors.white,
                                       ),
-                                      const SizedBox(width: YMusicSpacing.md),
-                                      Expanded(
-                                        child: Opacity(
-                                          opacity: collapseProgress,
-                                          child: Transform.translate(
-                                            offset: Offset(
-                                              0,
-                                              20 * (1 - collapseProgress),
-                                            ),
-                                            child: Text(
-                                              detail.name ?? '',
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 17,
-                                                fontWeight: FontWeight.w600,
-                                              ),
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                    ),
+                                    const SizedBox(width: YMusicSpacing.md),
+                                    Expanded(
+                                      child: Opacity(
+                                        opacity: collapseProgress,
+                                        child: Transform.translate(
+                                          offset: Offset(
+                                            0,
+                                            20 * (1 - collapseProgress),
+                                          ),
+                                          child: Text(
+                                            detail.name ?? '',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 17,
+                                              fontWeight: FontWeight.w600,
                                             ),
                                           ),
                                         ),
                                       ),
-                                      IconButton(onPressed: () {
-                                        provider.showDescriptionSheet(context, detail);
-                                      }, icon: const Icon(
-                                        Icons.more_vert,
-                                        color: Colors.white,
-                                      ))
-                                    ],
-                                  ),
+                                    ),
+                                    IconButton(onPressed: () {
+                                      provider.showDescriptionSheet(context, detail);
+                                    }, icon: const Icon(
+                                      Icons.more_vert,
+                                      color: Colors.white,
+                                    ))
+                                  ],
                                 ),
-                              ],
-                            )
+                              ),
+                            ],
+                          )
                         ),
                       ),
                     ],

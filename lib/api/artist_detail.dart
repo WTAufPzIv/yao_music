@@ -1,4 +1,5 @@
 import '../models/artist_detail.dart';
+import 'base/dio_http.dart';
 import 'constants.dart';
 import 'home_api.dart';
 
@@ -6,10 +7,10 @@ class ArtistDetailApi {
   /// 获取歌手详情
   static Future<ArtistDetailModel> fetchArtistDetail(int id) async {
     final results = await Future.wait([
-      dio.get('$baseUrl/artist/detail?id=$id'),
-      dio.get('$baseUrl/artist/top/song?id=$id'),
-      dio.get('$baseUrl/artist/album?id=$id&limit=20'),
-      dio.get('$baseUrl/artist/desc?id=$id'),
+      DioHttp.dio.get('$baseUrl/artist/detail?id=$id'),
+      DioHttp.dio.get('$baseUrl/artist/top/song?id=$id'),
+      DioHttp.dio.get('$baseUrl/artist/album?id=$id&limit=20'),
+      DioHttp.dio.get('$baseUrl/artist/desc?id=$id'),
     ]);
     final response1 = results[0];
     final response2 = results[1];
@@ -25,7 +26,7 @@ class ArtistDetailApi {
   // 获取歌曲分页
   static Future<ArtistAllSongModel> fetchArtistAllSong(int id, ArtistAllSongDTO params) async {
     final results = await Future.wait([
-      dio.get('$baseUrl/artist/songs?id=$id&order=${params.order.name}&limit=${params.limit}&offset=${params.offset}'),
+      DioHttp.dio.get('$baseUrl/artist/songs?id=$id&order=${params.order.name}&limit=${params.limit}&offset=${params.offset}'),
     ]);
     final response = results[0];
     return ArtistAllSongModel.fromJson(response.data);
@@ -33,7 +34,7 @@ class ArtistDetailApi {
   // 获取专辑分页
   static Future<ArtistAllAlbumModel> fetchArtistAllAlbum(int id, ArtistAllAlbumDTO params) async {
     final results = await Future.wait([
-      dio.get('$baseUrl/artist/album?id=$id&order=${params.order.name}&limit=${params.limit}&offset=${params.offset}'),
+      DioHttp.dio.get('$baseUrl/artist/album?id=$id&order=${params.order.name}&limit=${params.limit}&offset=${params.offset}'),
     ]);
     final response = results[0];
     return ArtistAllAlbumModel.fromJson(response.data);

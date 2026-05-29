@@ -1,4 +1,5 @@
 import '../models/set_list_detail.dart';
+import 'base/dio_http.dart';
 import 'constants.dart';
 import 'home_api.dart';
 
@@ -6,8 +7,8 @@ class SetListDetailApi {
   /// 获取歌单详情
   static Future<SetListDetailModel> fetchSetListDetail(int id) async {
     final results = await Future.wait([
-      dio.get('$baseUrl/playlist/detail?id=$id&s=1'),
-      dio.get('$baseUrl/playlist/track/all?id=$id'),
+      DioHttp.dio.get('$baseUrl/playlist/detail?id=$id&s=1'),
+      DioHttp.dio.get('$baseUrl/playlist/track/all?id=$id'),
     ]);
     final response1 = results[0];
     final response2 = results[1];
