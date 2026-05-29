@@ -29,8 +29,8 @@ class LoginProvider extends ChangeNotifier {
     /// 获取登录信息
    Future<void> loadLoginStatus() async {
      try {
-       loadState = LoadState.loading;
        notifyListeners();
+       loadState = LoadState.loading;
        final result = await LoginService.getLoginStatus();
        userinfo = result;
        loadState = LoadState.success;
@@ -75,7 +75,7 @@ class LoginProvider extends ChangeNotifier {
 
    /// cookie登录
    Future<void> loadLoginCookie(String cookie) async {
-     DioHttp.setCookie(cookie);
+     await DioHttp.setCookie(cookie);
      await loadLoginStatus();
    }
 
@@ -87,7 +87,8 @@ class LoginProvider extends ChangeNotifier {
 
    /// 登出
    Future<void> loadLout() async {
-     await LoginService.getLogout();
+     DioHttp.clearCookie();
+     await loadLoginStatus();
    }
 
    Future<void> showLogoutSheet (BuildContext context) async {
@@ -134,11 +135,8 @@ class LoginProvider extends ChangeNotifier {
                        InkWell(
                          borderRadius: BorderRadius.circular(12),
                          onTap: () async {
+                           Navigator.pop(sheetContext);
                            await loadLout();
-                           await loadLoginStatus();
-                           ScaffoldMessenger.of(context).showSnackBar(
-                             const SnackBar(content: Text('已退出登录')),
-                           );
                          },
                          child: SizedBox(
                              width: double.infinity,

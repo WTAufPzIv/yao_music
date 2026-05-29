@@ -98,7 +98,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
   }
 
-  Future<void> _loginByCookie(LoginProvider provider) async {
+  Future<void> _loginByCookie(LoginProvider provider, BuildContext context) async {
     final cookie = cookieController.text.replaceAll('set-cookie:', '').replaceAll('Set-Cookie:', '').trim();
     if (cookie.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -108,6 +108,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     }
     try {
       await provider.loadLoginCookie(cookie);
+      Navigator.pop(context);
     } catch (e) {
       print(e.toString());
     }
@@ -259,7 +260,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     children: [
                                       _buildCaptchaLogin(provider),
                                       _buildPasswordLogin(provider),
-                                      _buildCookieLogin(provider),
+                                      _buildCookieLogin(provider, context),
                                     ],
                                   ),
                                 ),
@@ -362,9 +363,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     );
   }
 
-  Widget _buildCookieLogin(LoginProvider provider) {
-    final loginLoadingState =
-        provider.loginLoadingState == LoadState.loading;
+  Widget _buildCookieLogin(LoginProvider provider, BuildContext context) {
+    final loginLoadingState = provider.loadState == LoadState.loading;
     return Column(
       children: [
         Container(
@@ -407,7 +407,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           text: loginLoadingState ? '登录中...' : 'Cookie登录',
           onTap: loginLoadingState
               ? null
-              : () => _loginByCookie(provider),
+              : () => _loginByCookie(provider, context),
         ),
       ],
     );

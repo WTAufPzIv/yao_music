@@ -71,10 +71,7 @@ class UserPageState extends State<UserPage> {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => ChangeNotifierProvider(
-          create: (_) => LoginProvider(),
-          child: LoginPage(),
-        ),
+        builder: (_) => LoginPage(),
       ),
     );
 
@@ -92,7 +89,7 @@ class UserPageState extends State<UserPage> {
       backgroundColor: YMusicColors.background,
       body: loading ? const Center(
         child: CupertinoActivityIndicator(),
-      ) : loginProvider.userinfo.isLogin ? AnimatedContainer(
+      ) : loginProvider?.userinfo?.userinfo?.userId != null && (loginProvider.userinfo.userinfo.userId) > 0 ? AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         color: YMusicColors.background,
         child: CustomScrollView(
