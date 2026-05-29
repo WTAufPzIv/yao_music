@@ -99,7 +99,7 @@ class UserPageState extends State<UserPage> {
             SliverAppBar(
               pinned: true,
               elevation: 0,
-              expandedHeight: 350,
+              expandedHeight: 300,
               backgroundColor: Colors.transparent,
               automaticallyImplyLeading: false,
               flexibleSpace: LayoutBuilder(
@@ -110,8 +110,8 @@ class UserPageState extends State<UserPage> {
                       /// 背景封面
                       CachedNetworkImage(
                         imageUrl: '${loginProvider.userinfo.userinfo.backgroundUrl}?param=400y400',
-                        width: 350,
-                        height: 350,
+                        width: 300,
+                        height: 300,
                         httpHeaders: { "user-agent": 'windows' },
                         fit: BoxFit.cover,
                       ),
@@ -131,13 +131,13 @@ class UserPageState extends State<UserPage> {
                       Positioned(
                         left: 20,
                         right: 20,
-                        bottom: 0,
+                        bottom: 20,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Container(
-                              width: 150,
-                              height: 150,
+                              width: 120,
+                              height: 120,
                               decoration: BoxDecoration(
                                 borderRadius:
                                 BorderRadius.circular(16),
@@ -219,7 +219,6 @@ class UserPageState extends State<UserPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: YMusicSpacing.md),
                   Text(
                     loginProvider.userinfo.userinfo.nickname ?? '',
                       textAlign: TextAlign.center,
