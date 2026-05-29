@@ -34,6 +34,6 @@ class SearchProvider extends BasePageProvider<SearchResultItem> {
       limit: limit,
       offset: offset
     ));
-    return PageData(list: result.search, more: result.search.isNotEmpty);
+    return PageData(list: result.search, more: result.search.isNotEmpty && result.search.length >= limit);
   }
 }

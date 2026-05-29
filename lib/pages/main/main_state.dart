@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yao_music/pages/home/home_page.dart';
 import '../../theme/app_color.dart';
 import '../home/home_wrapper.dart';
 import '../search/search_page.dart';
@@ -11,7 +12,7 @@ class MainPageState extends State<MainPage> {
   int currentIndex = 0;
 
   final List<Widget> pages = [
-    const HomePageWrapper(),
+    const HomePage(),
     const SearchPageWrapper(),
     const UserPage(),
   ];

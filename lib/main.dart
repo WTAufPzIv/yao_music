@@ -1,16 +1,26 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:yao_music/providers/home_provider.dart';
+import 'package:yao_music/providers/login_provider.dart';
+import 'api/base/dio_http.dart';
 import 'app/app.dart';
 
-// void main() => runApp(
-//   MultiProvider(
-//     providers: [],
-//     child: const MyApp(),
-//   )
-// );
-
-void main() {
-  runApp(const MyApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DioHttp.init();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => HomeProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LoginProvider(),
+        ),
+      ],
+      child: const MyApp(),
+    )
+  );
 }
