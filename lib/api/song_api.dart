@@ -10,4 +10,9 @@ class SongApi {
     return results.data['url'];
   }
   /// 获取网易云歌曲详情
+  static Future<String> fetchSongAlbumCover(SongAlbumDTO params) async {
+    final results = await dio.get('$gdMusicUrl?types=pic&source=${params.platform.name}&id=${params.picId}');
+    print(results.data.runtimeType);
+    return results.data['url'];
+  }
 }

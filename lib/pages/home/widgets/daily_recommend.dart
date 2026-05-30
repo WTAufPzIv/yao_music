@@ -1,12 +1,14 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:yao_music/models/daily_recommend.dart';
+import 'package:yao_music/models/search.dart';
 
 import '../../../components/music_cover.dart';
 import '../../../constants/load_state.dart';
+import '../../../models/song_detail.dart';
 import '../../../providers/home_provider.dart';
+import '../../../providers/song_detail_provider.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
@@ -39,6 +41,7 @@ class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAlive
   Widget build(BuildContext context) {
     super.build(context);
     final provider = context.watch<HomeProvider>();
+    final playerProvider = context.read<SongDetailProvider>();
     bool loading = provider.loadBannerState == LoadState.loading;
     final List<DailyRecommendModel> daily = provider.daily;
     // 每页4个
@@ -92,10 +95,22 @@ class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAlive
                         ),
                         itemBuilder: (context, index) {
                           final song = pageSongs[index];
-                          return _MusicItem(
-                              song: song,
-                              loading: loading,
-                              openSongInfo: (DailyRecommendModel song) => provider.showSongInfoSheet(context, song)
+                          return GestureDetector(
+                            onTap: () {
+                              playerProvider.fetchUrlAndPlay(SingMiniInfo(
+                                id: song.id,
+                                platform: SearchPlatform.netease,
+                                name: song.name,
+                                artistName: song.artistNames,
+                                albumName: song.album.name,
+                                coverUrl: song.album.picUrl
+                              ));
+                            },
+                            child: _MusicItem(
+                                song: song,
+                                loading: loading,
+                                openSongInfo: (DailyRecommendModel song) => provider.showSongInfoSheet(context, song)
+                            ),
                           );
                         },
                       ),

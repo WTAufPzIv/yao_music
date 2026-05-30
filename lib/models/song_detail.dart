@@ -6,8 +6,8 @@ class SingMiniInfo {
   final String name;
   final String artistName;
   final String albumName;
-  final String coverUrl;
-  final Map<String, dynamic>? info;
+  final String? coverUrl;
+  final String? picId;
 
   const SingMiniInfo({
     required this.id,
@@ -15,8 +15,8 @@ class SingMiniInfo {
     required this.name,
     required this.artistName,
     required this.albumName,
-    required this.coverUrl,
-    this.info,
+    this.coverUrl,
+    this.picId
   });
 
   factory SingMiniInfo.fromJson(Map<String, dynamic> json) {
@@ -27,7 +27,7 @@ class SingMiniInfo {
       artistName: json['artistName'] ?? '',
       albumName: json['albumName'] ?? '',
       coverUrl: json['coverUrl'] ?? '',
-      info: json['info'] ?? {},
+      picId: json['picId'] ?? '',
     );
     return temp;
   }
@@ -35,6 +35,7 @@ class SingMiniInfo {
 
 class SongDetailModel extends SingMiniInfo {
   final String url;
+  final Map<String, dynamic>? info;
 
   const SongDetailModel({
     required this.url,
@@ -43,8 +44,7 @@ class SongDetailModel extends SingMiniInfo {
     required super.name,
     required super.artistName,
     required super.albumName,
-    required super.coverUrl,
-    super.info,
+    this.info,
   });
 
   factory SongDetailModel.fromJson(Map<String, dynamic> json) {
@@ -55,7 +55,6 @@ class SongDetailModel extends SingMiniInfo {
       name: json['name'] ?? '',
       artistName: json['artistName'] ?? '',
       albumName: json['albumName'] ?? '',
-      coverUrl: json['coverUrl'] ?? '',
       info: json['info'] ?? {},
     );
     return temp;
@@ -69,5 +68,15 @@ class SongDTO  {
   SongDTO({
     required this.platform,
     required this.id,
+  });
+}
+
+class SongAlbumDTO  {
+  final SearchPlatform platform;
+  final String picId;
+
+  SongAlbumDTO({
+    required this.platform,
+    required this.picId,
   });
 }

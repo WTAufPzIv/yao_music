@@ -7,4 +7,9 @@ class SongDetailService {
     final result = await SongApi.fetchSongDetail(params);
     return result;
   }
+  /// 获取歌曲专辑图
+  static Future<String> getSongAlbumCover(SongAlbumDTO params) async {
+    final result = await SongApi.fetchSongAlbumCover(params);
+    return result;
+  }
 }
