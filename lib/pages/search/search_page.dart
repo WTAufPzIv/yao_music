@@ -7,6 +7,8 @@ import 'package:yao_music/theme/app_space.dart';
 import 'package:yao_music/theme/app_text.dart';
 
 import '../../models/search.dart';
+import '../../models/song_detail.dart';
+import '../../providers/song_detail_provider.dart';
 
 class SearchResult extends StatefulWidget {
   const SearchResult({super.key});
@@ -50,6 +52,7 @@ class _SearchResultState extends State<SearchResult> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SearchProvider>();
+    final playerProvider = context.read<SongDetailProvider>();
     final list = provider.list;
     final bool loading = provider.loading == LoadState.loading;
     return Scaffold(
@@ -97,7 +100,18 @@ class _SearchResultState extends State<SearchResult> {
                           return _buildBottomLoader(provider);
                         }
                         final item = list[index];
-                        return _buildResultItem(item);
+                        return GestureDetector(
+                          onTap: () {
+                            playerProvider.playSong(SingMiniInfo(
+                              id: int.parse(item.id),
+                              platform: provider.platform,
+                              name: item.name,
+                              artistName: item.artistNames,
+                              albumName: item.album
+                            ));
+                          },
+                          child: _buildResultItem(item),
+                        );
                       },
                     )
           ),
@@ -181,9 +195,6 @@ class _SearchResultState extends State<SearchResult> {
             style: YMusicTextStyles.bodySmall,
           )
         ],
-        // onTap: () {
-        //   // 播放 / 进入详情
-        // },
       )
     );
   }

@@ -109,8 +109,6 @@ class PlayerManager {
         }
         break;
     }
-    player.seek(Duration.zero);
-    await audioHandler.pause();
     await _playCurrentIndex();
   }
 
@@ -130,14 +128,14 @@ class PlayerManager {
           currentIndex = playlist.length - 1;
         }
     }
-    player.seek(Duration.zero);
-    await audioHandler.pause();
     await _playCurrentIndex();
   }
 
   Future<void> _playCurrentIndex() async {
     final song = playlist[currentIndex];
     if (onPlayRequest != null) {
+      audioHandler.pause();
+      player.seek(Duration.zero);
       await onPlayRequest!(
         song,
       );

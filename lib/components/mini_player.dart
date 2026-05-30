@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 
+import '../constants/load_state.dart';
 import '../pages/player/player_page.dart';
 import '../providers/song_detail_provider.dart';
 
@@ -151,10 +152,9 @@ class _PlayButton extends StatelessWidget {
         final processingState = state?.processingState;
         final playing = state?.playing ?? false;
         /// 加载中
-        if (processingState ==
-            ProcessingState.loading ||
-            processingState ==
-                ProcessingState.buffering) {
+        if (provider.loadState == LoadState.loading
+            || processingState == ProcessingState.loading
+            || processingState == ProcessingState.buffering) {
           return const SizedBox(
             width: 48,
             height: 48,
