@@ -5,11 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:yao_music/providers/home_provider.dart';
 import 'package:yao_music/providers/login_provider.dart';
 import 'package:yao_music/providers/song_detail_provider.dart';
+import 'package:yao_music/providers/song_handle/player_manager.dart';
 import 'api/base/dio_http.dart';
 import 'app/app.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await PlayerManager.instance.init();
   await DioHttp.init();
   runApp(
     MultiProvider(

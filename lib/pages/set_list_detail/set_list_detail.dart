@@ -9,8 +9,11 @@ import 'package:yao_music/theme/app_text.dart';
 
 import '../../components/music_cover.dart';
 import '../../constants/load_state.dart';
+import '../../models/search.dart';
 import '../../models/set_list_detail.dart';
+import '../../models/song_detail.dart';
 import '../../providers/set_list_provider.dart';
+import '../../providers/song_detail_provider.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_space.dart';
 
@@ -60,6 +63,7 @@ class _SetListDetailState extends State<SetListDetail> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SetListProvider>();
+    final playerProvider = context.read<SongDetailProvider>();
     bool loading = provider.loadState == LoadState.loading;
     final SetListDetailModel detail = provider.detail;
     final Color bgColor = provider.bgColor;
@@ -140,12 +144,29 @@ class _SetListDetailState extends State<SetListDetail> {
                               ),
                             ),
                             const SizedBox(height: YMusicSpacing.md),
-                            SizedBox(
-                              width: 200,
-                              child: _actionButton(
-                                icon:
-                                Icons.play_arrow_rounded,
-                                text: '播放',
+                            GestureDetector(
+                              onTap: () {
+                                playerProvider.setPlayListAndPlay(
+                                    detail.songs.map(
+                                            (e) =>
+                                                SingMiniInfo(
+                                                    id: e.id,
+                                                    coverUrl: e.album.picUrl,
+                                                    platform: SearchPlatform.netease,
+                                                    name: e.name,
+                                                    artistName: e.artistNames,
+                                                    albumName: e.album.name
+                                                )).toList(),
+                                  0
+                                );
+                              },
+                              child:  SizedBox(
+                                width: 200,
+                                child: _actionButton(
+                                  icon:
+                                  Icons.play_arrow_rounded,
+                                  text: '播放',
+                                ),
                               ),
                             ),
                             SizedBox(
@@ -214,12 +235,38 @@ class _SetListDetailState extends State<SetListDetail> {
             SliverList.builder(
               itemCount: detail.songs?.length,
               itemBuilder: (context, index) {
+                final song = detail.songs![index];
                 return Column(
                   children: [
-                    _setListSongItem(
-                        song: detail.songs![index],
-                        index: index,
-                        openSongInfo: (SetListDetailSongsModel song) => provider.showSongInfoSheet(context, song)
+                    GestureDetector(
+                      onTap: () {
+                        playerProvider.setPlayListAndPlay(
+                            detail.songs.map(
+                                    (e) =>
+                                    SingMiniInfo(
+                                        id: e.id,
+                                        coverUrl: e.album.picUrl,
+                                        platform: SearchPlatform.netease,
+                                        name: e.name,
+                                        artistName: e.artistNames,
+                                        albumName: e.album.name
+                                    )).toList(),
+                            index
+                        );
+                        // playerProvider.playSong(SingMiniInfo(
+                        //     id: song.id,
+                        //     platform: SearchPlatform.netease,
+                        //     name: song.name,
+                        //     artistName: song.artistNames,
+                        //     albumName: song.album.name,
+                        //     coverUrl: song.album.picUrl
+                        // ));
+                      },
+                      child: _setListSongItem(
+                          song: detail.songs![index],
+                          index: index,
+                          openSongInfo: (SetListDetailSongsModel song) => provider.showSongInfoSheet(context, song)
+                      ),
                     ),
                     if (index != detail.songs.length - 1)
                       const Divider(

@@ -147,21 +147,14 @@ class _PlayButton extends StatelessWidget {
     return StreamBuilder<PlayerState>(
       stream: provider.player.playerStateStream,
       builder: (_, snapshot) {
-
         final state = snapshot.data;
-
-        final processingState =
-            state?.processingState;
-
-        final playing =
-            state?.playing ?? false;
-
+        final processingState = state?.processingState;
+        final playing = state?.playing ?? false;
         /// 加载中
         if (processingState ==
             ProcessingState.loading ||
             processingState ==
                 ProcessingState.buffering) {
-
           return const SizedBox(
             width: 48,
             height: 48,

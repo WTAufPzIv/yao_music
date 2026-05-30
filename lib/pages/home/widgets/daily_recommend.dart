@@ -97,7 +97,7 @@ class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAlive
                           final song = pageSongs[index];
                           return GestureDetector(
                             onTap: () {
-                              playerProvider.fetchUrlAndPlay(SingMiniInfo(
+                              playerProvider.playSong(SingMiniInfo(
                                 id: song.id,
                                 platform: SearchPlatform.netease,
                                 name: song.name,

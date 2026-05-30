@@ -2,12 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:yao_music/constants/load_state.dart';
 import 'package:yao_music/models/search.dart';
+import 'package:yao_music/providers/song_handle/player_manager.dart';
 
-import '../components/global_player.dart';
 import '../models/song_detail.dart';
 import '../services/song_detail_service.dart';
 
 class SongDetailProvider extends ChangeNotifier {
+  final PlayerManager _manager = PlayerManager.instance;
   SingMiniInfo currentBaseInfo = SingMiniInfo(
       id: 0,
       platform: SearchPlatform.netease,
@@ -17,42 +18,23 @@ class SongDetailProvider extends ChangeNotifier {
   );
   String currentUrl = '';
   String currentCoverImage = '';
-  LoadState loadState = LoadState.loading;
-  List<SingMiniInfo> playListIds = [];
-  /// 当前是否显示播放器按钮
   bool visible = true;
-  /// 播放器核心
-  final AudioPlayer _player = GlobalPlayer.instance.player;
-  AudioPlayer get player => _player;
-  bool get playing => _player.playing;
+  LoadState loadState = LoadState.success;
+  AudioPlayer get player => _manager.player;
+  PlayMode get playMode => _manager.playMode;
+  bool get playing => _manager.playing;
+
 
   SongDetailProvider() {
-    _listenPlayer();
-  }
-
-  void _listenPlayer() {
-    _player.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed) {
-        // nextSong();
-      }
-    });
-    notifyListeners();
+    _manager.onPlayRequest = playSong;
   }
 
   Future<void> togglePlay() async {
-    if (_player.playing) {
-      await pause();
+    if (_manager.playing) {
+      await _manager.pause();
     } else {
-      await resume();
+      await _manager.resume();
     }
-  }
-
-  Future<void> pause() async {
-    await _player.pause();
-  }
-
-  Future<void> resume() async {
-    await _player.play();
   }
 
   Future<void> fetchAlbumCover() async {
@@ -75,33 +57,52 @@ class SongDetailProvider extends ChangeNotifier {
     currentCoverImage = '';
   }
 
-  Future<void> fetchUrlAndPlay(SingMiniInfo mini) async {
+  Future<void> playSong(SingMiniInfo mini) async {
     if (mini.id == null || mini.id.isNaN) return;
     if (currentBaseInfo.id == mini.id) {
-      if (!_player.playing) {
-        await _player.play();
+      if (!_manager.playing) {
+        await _manager.resume();
       }
       return;
     }
     currentBaseInfo = mini;
     try {
-      notifyListeners();
       loadState = LoadState.loading;
+      notifyListeners();
       await fetchAlbumCover();
       final result = await SongDetailService.getSongDetail(SongDTO(
           id: currentBaseInfo.id,
           platform: currentBaseInfo.platform
       ));
       currentUrl = result;
-      await _player.setUrl(currentUrl);
-      await _player.play();
       visible = true;
       loadState = LoadState.success;
       notifyListeners();
+      await _manager.playSong(
+        song: mini,
+        url: currentUrl,
+        cover: currentCoverImage
+      );
     } catch (e) {
       loadState = LoadState.error;
-      notifyListeners();
       rethrow;
     }
+  }
+
+  void next() {
+    _manager.nextSong();
+  }
+
+  void pre() {
+    _manager.previousSong();
+  }
+
+  void togglePlayMode() {
+    _manager.togglePlayMode();
+    notifyListeners();
+  }
+
+  void setPlayListAndPlay(List<SingMiniInfo> minis, int? startIndex) {
+    _manager.setPlaylist(songs: minis, startIndex: startIndex ?? 0);
   }
 }

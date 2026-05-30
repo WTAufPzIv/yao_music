@@ -3,10 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:yao_music/constants/load_state.dart';
 
 import '../../components/playerProgressBar.dart';
 import '../../components/player_time_text.dart';
 import '../../providers/song_detail_provider.dart';
+import '../../providers/song_handle/player_manager.dart';
 
 class PlayerPage extends StatefulWidget {
   const PlayerPage({ super.key });
@@ -35,12 +37,37 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  IconData getPlayModeIcon(PlayMode mode) {
+    switch (mode) {
+      case PlayMode.sequence:
+        return CupertinoIcons.repeat;
+
+      case PlayMode.shuffle:
+        return CupertinoIcons.shuffle;
+
+      case PlayMode.repeatOne:
+        return CupertinoIcons.repeat_1;
+    }
+  }
+
+  Color getPlayModeColor(PlayMode mode) {
+    switch (mode) {
+      case PlayMode.sequence:
+        return Colors.white54;
+
+      case PlayMode.shuffle:
+        return Colors.redAccent;
+
+      case PlayMode.repeatOne:
+        return Colors.redAccent;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<SongDetailProvider>();
     final player = provider.player;
     final song = provider.currentBaseInfo;
-    final cover = provider.currentCoverImage;
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
@@ -96,34 +123,6 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
                 );
               },
             ),
-            // Container(
-            //   margin: const EdgeInsets.symmetric(horizontal: 30),
-            //   decoration: BoxDecoration(
-            //     borderRadius: BorderRadius.circular(24),
-            //     boxShadow: [
-            //       BoxShadow(
-            //         blurRadius: 30,
-            //         color: Colors.black.withOpacity(0.4),
-            //       ),
-            //     ],
-            //   ),
-            //   child: ClipRRect(
-            //     borderRadius: BorderRadius.circular(24),
-            //     child: cover.isNotEmpty
-            //         ? CachedNetworkImage(
-            //           imageUrl: cover,
-            //           width: double.infinity,
-            //           fit: BoxFit.cover,
-            //           httpHeaders: const {
-            //             "user-agent": "windows",
-            //           },
-            //         ) : Image.asset(
-            //           "lib/assets/image/album_default.png",
-            //           width: double.infinity,
-            //           fit: BoxFit.cover,
-            //         ),
-            //   ),
-            // ),
             const SizedBox(height: 40),
             /// 歌曲信息
             Padding(
@@ -162,7 +161,22 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
                         ),
                       ],
                     ),
-                  )
+                  ),
+                  Consumer<SongDetailProvider>(
+                    builder: (_, provider, __) {
+                      final mode = provider.playMode;
+                      return IconButton(
+                        onPressed: () {
+                          provider.togglePlayMode();
+                        },
+                        icon: Icon(
+                          getPlayModeIcon(mode),
+                          color: getPlayModeColor(mode),
+                          size: 26,
+                        ),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
@@ -191,7 +205,7 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: () {},
+                    onPressed: provider.pre,
                     iconSize: 36,
                     icon: const Icon(
                       CupertinoIcons.backward_fill,
@@ -199,39 +213,66 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
                     ),
                   ),
                   const SizedBox(width: 20),
-                  StreamBuilder<PlayerState>(
+                  provider.loadState == LoadState.loading ? SizedBox(
+                    width: 82,
+                    height: 82,
+                    child: Padding(
+                      padding: EdgeInsets.all(12),
+                      child:
+                      CircularProgressIndicator(
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ) : StreamBuilder<PlayerState>(
                     stream: player.playerStateStream,
                     builder: (_, snapshot) {
-                      final playing =
-                          snapshot.data?.playing ??
-                              false;
-                      return Container(
-                        width: 82,
-                        height: 82,
-                        decoration:
-                          const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: IconButton(
-                          onPressed:
-                          provider.togglePlay,
-                          iconSize: 42,
-                          icon: Icon(
-                            playing
-                                ? CupertinoIcons
-                                .pause_fill
-                                : CupertinoIcons
-                                .play_fill,
-                            color: Colors.black,
+                      final state = snapshot.data;
+                      final processingState = state?.processingState;
+                      final playing = snapshot.data?.playing ?? false;
+                      if (
+                          processingState == ProcessingState.loading
+                          || processingState == ProcessingState.buffering
+                      ) {
+                        return const SizedBox(
+                          width: 82,
+                          height: 82,
+                          child: Padding(
+                            padding: EdgeInsets.all(12),
+                            child:
+                            CircularProgressIndicator(
+                              strokeWidth: 2,
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      } else {
+                        return Container(
+                          width: 82,
+                          height: 82,
+                          decoration:
+                          const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            onPressed:
+                            provider.togglePlay,
+                            iconSize: 42,
+                            icon: Icon(
+                              playing
+                                  ? CupertinoIcons
+                                  .pause_fill
+                                  : CupertinoIcons
+                                  .play_fill,
+                              color: Colors.black,
+                            ),
+                          ),
+                        );
+                      }
                     },
                   ),
                   const SizedBox(width: 20),
                   IconButton(
-                    onPressed: () {},
+                    onPressed: provider.next,
                     iconSize: 36,
                     icon: const Icon(
                       CupertinoIcons.forward_fill,
@@ -254,33 +295,26 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
     return Container(
       width: 320,
       height: 320,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(
-            blurRadius: 30,
-            color: Colors.black.withOpacity(0.5),
-          ),
-        ],
-      ),
-      margin: const EdgeInsets.symmetric(
-        horizontal: 30,
-      ),
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.black,
+        ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          /// 黑胶底盘
-          Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(
-                colors: [
-                  Colors.grey.shade900,
-                  Colors.black,
-                ],
+          /// 黑胶纹路
+          ...List.generate(20, (index) {
+            return Container(
+              width: 320 - index * 10,
+              height: 320 - index * 10,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.03),
+                ),
               ),
-            ),
-          ),
+            );
+          }),
           /// 专辑封面
           ClipOval(
             child: cover.isNotEmpty
@@ -298,17 +332,15 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
                 ),
           ),
           /// 唱片中心孔
+          /// 中心孔
           Container(
-            width: 28,
-            height: 28,
-            decoration: BoxDecoration(
-              color: Colors.black,
+            width: 20,
+            height: 20,
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(
-                color: Colors.white24,
-              ),
+              color: Colors.black,
             ),
-          ),
+          )
         ],
       )
     );
