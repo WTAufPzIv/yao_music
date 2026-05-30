@@ -107,7 +107,8 @@ class _SearchResultState extends State<SearchResult> {
                               platform: provider.platform,
                               name: item.name,
                               artistName: item.artistNames,
-                              albumName: item.album
+                              albumName: item.album,
+                              picId: item.picId
                             ));
                           },
                           child: _buildResultItem(item),

@@ -68,6 +68,7 @@ abstract class BasePageProvider<T> extends ChangeNotifier {
       } else {
         loading = LoadState.success;
       }
+      notifyListeners();
     } catch (e) {
       /// 首次加载失败
       if (list.isEmpty) {

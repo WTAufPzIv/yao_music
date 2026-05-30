@@ -5,6 +5,7 @@ class SearchResultItem {
   final String name;
   final List<dynamic> artist;
   final String album;
+  final String picId;
   String get artistNames {
     return artist.join(' / ');
   }
@@ -14,6 +15,7 @@ class SearchResultItem {
     required this.name,
     required this.artist,
     required this.album,
+    required this.picId
   });
 
   factory SearchResultItem.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class SearchResultItem {
       id: json['id'] ?? '0',
       name: json['name'] ?? '',
       album: json['album'] ?? '',
+      picId: json['pic_id'] ?? '',
       artist: (json['artist'] as List<dynamic>).toList(),
     );
     return temp;

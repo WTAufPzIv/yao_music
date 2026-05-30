@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:yao_music/constants/load_state.dart';
 import 'package:yao_music/models/search.dart';
@@ -74,6 +75,14 @@ class SongDetailProvider extends ChangeNotifier {
           id: currentBaseInfo.id,
           platform: currentBaseInfo.platform
       ));
+      if (result == null || result.isEmpty || result.length == 0) {
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text('播放失败')),
+        // );
+        loadState = LoadState.success;
+        notifyListeners();
+        return;
+      }
       currentUrl = result;
       visible = true;
       loadState = LoadState.success;
