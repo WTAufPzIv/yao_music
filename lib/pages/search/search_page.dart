@@ -103,7 +103,7 @@ class _SearchResultState extends State<SearchResult> {
                         return GestureDetector(
                           onTap: () {
                             playerProvider.playSong(SingMiniInfo(
-                              id: int.parse(item.id),
+                              id: item.id as dynamic,
                               platform: provider.platform,
                               name: item.name,
                               artistName: item.artistNames,
@@ -133,16 +133,16 @@ class _SearchResultState extends State<SearchResult> {
           ),
           const SizedBox(width: 12),
           _sortChip(
-              label: '酷我音乐',
-              selected: provider.platform == SearchPlatform.kuwo,
-              onTap: () => provider.changePlatForm(SearchPlatform.kuwo)
+              label: 'joox',
+              selected: provider.platform == SearchPlatform.joox,
+              onTap: () => provider.changePlatForm(SearchPlatform.joox)
           ),
           const SizedBox(width: 12),
           _sortChip(
               label: 'Bilibili',
               selected: provider.platform == SearchPlatform.bilibili,
               onTap: () => provider.changePlatForm(SearchPlatform.bilibili)
-          ),
+          )
         ],
       ),
     );

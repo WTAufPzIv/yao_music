@@ -49,7 +49,7 @@ class SearchModel {
 
 enum SearchPlatform {
   netease,
-  kuwo,
+  joox,
   bilibili
 }
 

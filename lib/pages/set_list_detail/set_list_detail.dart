@@ -150,7 +150,7 @@ class _SetListDetailState extends State<SetListDetail> {
                                     detail.songs.map(
                                             (e) =>
                                                 SingMiniInfo(
-                                                    id: e.id,
+                                                    id: e.id.toString(),
                                                     coverUrl: e.album.picUrl,
                                                     platform: SearchPlatform.netease,
                                                     name: e.name,
@@ -244,7 +244,7 @@ class _SetListDetailState extends State<SetListDetail> {
                             detail.songs.map(
                                     (e) =>
                                     SingMiniInfo(
-                                        id: e.id,
+                                        id: e.id.toString(),
                                         coverUrl: e.album.picUrl,
                                         platform: SearchPlatform.netease,
                                         name: e.name,

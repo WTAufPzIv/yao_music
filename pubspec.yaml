@@ -48,6 +48,7 @@ dependencies:
   audio_session: ^0.2.3
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.4
   flutter_test:
     sdk: flutter
 
@@ -71,6 +72,13 @@ flutter:
   assets:
     - lib/assets/image/banner.jpg
     - lib/assets/image/album_default.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "lib/assets/image/icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "lib/assets/image/icon.png"
 
   # To add assets to your application, add an assets section, like this:
   # assets:

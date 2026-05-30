@@ -1,7 +1,7 @@
 import 'package:yao_music/models/search.dart';
 
 class SingMiniInfo {
-  final int id;
+  final String id;
   final SearchPlatform platform;
   final String name;
   final String artistName;
@@ -63,7 +63,7 @@ class SongDetailModel extends SingMiniInfo {
 
 class SongDTO  {
   final SearchPlatform platform;
-  final int id;
+  final String id;
 
   SongDTO({
     required this.platform,

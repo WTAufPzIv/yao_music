@@ -83,6 +83,7 @@ class PlayerManager {
     required String url,
     required String cover
   }) async {
+    print(url);
     await player.setUrl(url);
     _updateMediaItem(song, cover);
     await audioHandler.play();

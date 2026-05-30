@@ -11,7 +11,7 @@ import '../services/song_detail_service.dart';
 class SongDetailProvider extends ChangeNotifier {
   final PlayerManager _manager = PlayerManager.instance;
   SingMiniInfo currentBaseInfo = SingMiniInfo(
-      id: 0,
+      id: '0',
       platform: SearchPlatform.netease,
       name: '没有正在播放的歌曲',
       artistName: '-',
@@ -59,7 +59,7 @@ class SongDetailProvider extends ChangeNotifier {
   }
 
   Future<void> playSong(SingMiniInfo mini) async {
-    if (mini.id == null || mini.id.isNaN) return;
+    if (mini.id == null || mini.id.isEmpty) return;
     if (currentBaseInfo.id == mini.id) {
       if (!_manager.playing) {
         await _manager.resume();
