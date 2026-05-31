@@ -135,8 +135,8 @@ class PlayerManager {
   Future<void> _playCurrentIndex() async {
     final song = playlist[currentIndex];
     if (onPlayRequest != null) {
-      audioHandler.pause();
-      player.seek(Duration.zero);
+      // audioHandler.pause();
+      // player.seek(Duration.zero);
       await onPlayRequest!(
         song,
       );
