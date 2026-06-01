@@ -85,12 +85,20 @@ class SongDetailProvider extends ChangeNotifier {
       visible = true;
       loadState = LoadState.success;
       notifyListeners();
-      if (justReady != null && justReady == true) return;
-      await _manager.playSong(
-        song: mini,
-        url: currentUrl,
-        cover: currentCoverImage
-      );
+      if (justReady != null && justReady == true) {
+        _manager.prePlaySong(
+            song: mini,
+            url: currentUrl,
+            cover: currentCoverImage
+        );
+      } else {
+        await _manager.playSong(
+            song: mini,
+            url: currentUrl,
+            cover: currentCoverImage
+        );
+      }
+
     } catch (e) {
       loadState = LoadState.error;
       rethrow;

@@ -42,7 +42,6 @@ class PlayerManager {
     _listenPlayer();
     (audioHandler).onNext = () => nextSong();
     (audioHandler).onPrevious = () => previousSong();
-    _playCurrentIndex();
   }
 
   void loadFromStorage () async {
@@ -58,7 +57,7 @@ class PlayerManager {
       orElse: () => PlayMode.sequence,
     );
     if (playlist.isNotEmpty && currentIndex != -1) {
-      _playCurrentIndex();
+      _readyCurrentIndex();
     }
   }
 
@@ -125,6 +124,15 @@ class PlayerManager {
     await audioHandler.play();
   }
 
+  Future<void> prePlaySong({
+    required SingMiniInfo song,
+    required String url,
+    required String cover
+  }) async {
+    await player.setUrl(url);
+    _updateMediaItem(song, cover);
+  }
+
   Future<void> nextSong() async {
     if (playlist.isEmpty) {
       player.seek(Duration.zero);
@@ -145,6 +153,10 @@ class PlayerManager {
         }
         break;
     }
+    await storage.write(
+      key: currentIndexKey,
+      value: currentIndex.toString(),
+    );
     await _playCurrentIndex();
   }
 
@@ -163,12 +175,15 @@ class PlayerManager {
           currentIndex = playlist.length - 1;
         }
     }
+    await storage.write(
+      key: currentIndexKey,
+      value: currentIndex.toString(),
+    );
     await _playCurrentIndex();
   }
 
   Future<void> _playCurrentIndex() async {
     final song = playlist[currentIndex];
-    print(onPlayRequest);
     if (onPlayRequest != null) {
       // audioHandler.pause();
       // player.seek(Duration.zero);
@@ -181,8 +196,6 @@ class PlayerManager {
   Future<void> _readyCurrentIndex() async {
     final song = playlist[currentIndex];
     if (onPlayRequest != null) {
-      // audioHandler.pause();
-      // player.seek(Duration.zero);
       await onPlayRequest!(
         song,
         justReady: true

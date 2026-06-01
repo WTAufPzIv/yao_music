@@ -32,7 +32,10 @@ class SingMiniInfo {
   factory SingMiniInfo.fromJson(Map<String, dynamic> json) {
     final SingMiniInfo temp = SingMiniInfo(
       id: json['id'] ?? 0,
-      platform: json['platform'] ?? SearchPlatform.netease,
+      platform: SearchPlatform.values.firstWhere(
+            (e) => e.name == (json['platform'] ?? 'netease'),
+        orElse: () => SearchPlatform.netease,
+      ),
       name: json['name'] ?? '',
       artistName: json['artistName'] ?? '',
       albumName: json['albumName'] ?? '',
