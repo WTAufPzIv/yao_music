@@ -40,7 +40,10 @@ class HomePageState extends State<HomePage> {
               const PersonalizedSetList(),
               const NewAlbumRelease(),
               const HotTop(),
-              const RankList()
+              const RankList(),
+              const SizedBox(
+                height: 30,
+              )
             ],
           )
       )

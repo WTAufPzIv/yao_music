@@ -296,6 +296,9 @@ class HomeProvider extends ChangeNotifier {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
+                                settings: const RouteSettings(
+                                  name: "/ArtistDetail",
+                                ),
                                 builder: (_) => ChangeNotifierProvider(
                                   create: (_) => ArtistDetailProvider(),
                                   child: ArtistDetail(artistId: song.artistList[0].id),
@@ -345,6 +348,9 @@ class HomeProvider extends ChangeNotifier {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(
+                                name: "/AlbumDetail",
+                              ),
                               builder: (_) => ChangeNotifierProvider(
                                 create: (_) => AlbumDetailProvider(),
                                 child: AlbumDetail(albumId: song.album.id),
@@ -498,6 +504,9 @@ class HomeProvider extends ChangeNotifier {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(
+                                name: "/ArtistDetail",
+                              ),
                               builder: (_) => ChangeNotifierProvider(
                                 create: (_) => ArtistDetailProvider(),
                                 child: ArtistDetail(artistId: song.artistList[0].id),

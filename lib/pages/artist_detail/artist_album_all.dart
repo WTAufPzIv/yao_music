@@ -192,10 +192,12 @@ class _ArtistAlbumAllState extends State<ArtistAlbumAll> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(
+                    name: "/AlbumDetail",
+                  ),
                   builder: (_) =>
                       ChangeNotifierProvider(
-                        create: (_) =>
-                            AlbumDetailProvider(),
+                        create: (_) => AlbumDetailProvider(),
                         child: AlbumDetail(
                           albumId: album.id,
                         ),

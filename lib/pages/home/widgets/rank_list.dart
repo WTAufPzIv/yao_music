@@ -116,6 +116,9 @@ class _RankListCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(
+                    name: "/SetListDetail",
+                  ),
                   builder: (_) => ChangeNotifierProvider(
                     create: (_) => SetListProvider(),
                     child: SetListDetail(

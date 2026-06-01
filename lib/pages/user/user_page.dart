@@ -71,6 +71,9 @@ class UserPageState extends State<UserPage> {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
+        settings: const RouteSettings(
+          name: "/LoginPage",
+        ),
         builder: (_) => LoginPage(),
       ),
     );
@@ -239,9 +242,11 @@ class UserPageState extends State<UserPage> {
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: YMusicSpacing.lg,
-                  vertical: YMusicSpacing.md
+              padding: const EdgeInsets.fromLTRB(
+                YMusicSpacing.md,
+                YMusicSpacing.md,
+                YMusicSpacing.md,
+                70,
               ),
               sliver: SliverGrid(
                 delegate: SliverChildBuilderDelegate(
@@ -351,6 +356,9 @@ class _UserSetListCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(
+                    name: "/SetListDetail",
+                  ),
                   builder: (_) => ChangeNotifierProvider(
                     create: (_) => SetListProvider(),
                     child: SetListDetail(

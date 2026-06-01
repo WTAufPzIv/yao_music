@@ -15,7 +15,7 @@ class HomeService {
   /// 获取日推
   static Future<List<DailyRecommendModel>> getDailyRecommend() async {
     final result = await HomeApi.fetchDailyRecommend();
-    return result.take(20).toList();
+    return result.toList();
   }
   /// 获取推荐歌单
   static Future<List<PersonalizedSetListModel>> getPersonalizedSetList() async  {

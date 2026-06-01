@@ -74,7 +74,7 @@ class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAlive
               child: PageView.builder(
                 controller: controller,
                 padEnds: false,
-                itemCount: loading ? 1 : 5,
+                itemCount: loading ? 1 : daily.length ~/ 4,
                 itemBuilder: (context, pageIndex) {
                   final start = pageIndex * pageSize;
                   final end = (start + pageSize).clamp(0, daily.length);
@@ -97,14 +97,19 @@ class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAlive
                           final song = pageSongs[index];
                           return GestureDetector(
                             onTap: () {
-                              playerProvider.playSong(SingMiniInfo(
-                                id: song.id.toString(),
-                                platform: SearchPlatform.netease,
-                                name: song.name,
-                                artistName: song.artistNames,
-                                albumName: song.album.name,
-                                coverUrl: song.album.picUrl
-                              ));
+                              playerProvider.setPlayListAndPlay(
+                                  daily.map(
+                                          (e) =>
+                                          SingMiniInfo(
+                                              id: e.id.toString(),
+                                              coverUrl: e.album.picUrl,
+                                              platform: SearchPlatform.netease,
+                                              name: e.name,
+                                              artistName: e.artistNames,
+                                              albumName: e.album.name
+                                          )).toList(),
+                                  pageIndex * pageSize +index
+                              );
                             },
                             child: _MusicItem(
                                 song: song,

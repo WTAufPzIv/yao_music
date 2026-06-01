@@ -26,6 +26,9 @@ class _MiniPlayerState extends State<MiniPlayer> {
         Navigator.push(
           context,
           PageRouteBuilder(
+            settings: const RouteSettings(
+              name: "/PlayerPage",
+            ),
             transitionDuration: const Duration(
               milliseconds: 380,
             ),

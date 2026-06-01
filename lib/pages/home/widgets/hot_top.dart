@@ -7,7 +7,10 @@ import 'package:yao_music/models/hot_top.dart';
 
 import '../../../components/music_cover.dart';
 import '../../../constants/load_state.dart';
+import '../../../models/search.dart';
+import '../../../models/song_detail.dart';
 import '../../../providers/home_provider.dart';
+import '../../../providers/song_detail_provider.dart';
 import '../../../theme/app_radius.dart';
 import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
@@ -40,6 +43,7 @@ class _HotTopState extends State<HotTop> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     super.build(context);
     final provider = context.watch<HomeProvider>();
+    final playerProvider = context.read<SongDetailProvider>();
     bool loading = provider.loadHotTopState == LoadState.loading;
     final List<HotTopModel> hot = provider.hot;
     // 每页5个
@@ -93,10 +97,27 @@ class _HotTopState extends State<HotTop> with AutomaticKeepAliveClientMixin {
                             ),
                             itemBuilder: (context, index) {
                               final song = pageSongs[index];
-                              return _MusicItem(
-                                  song: song,
-                                  loading: loading,
-                                  openSongInfo: (HotTopModel song) => provider.showSongInfoSheet(context, song)
+                              return GestureDetector(
+                                onTap: () {
+                                  playerProvider.setPlayListAndPlay(
+                                      hot.map(
+                                              (e) =>
+                                              SingMiniInfo(
+                                                  id: e.id.toString(),
+                                                  coverUrl: e.album.picUrl,
+                                                  platform: SearchPlatform.netease,
+                                                  name: e.name,
+                                                  artistName: e.artistNames,
+                                                  albumName: e.album.name
+                                              )).toList(),
+                                      pageIndex * pageSize +index
+                                  );
+                                },
+                                child: _MusicItem(
+                                    song: song,
+                                    loading: loading,
+                                    openSongInfo: (HotTopModel song) => provider.showSongInfoSheet(context, song)
+                                )
                               );
                             },
                           ),

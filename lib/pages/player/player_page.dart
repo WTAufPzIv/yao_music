@@ -322,6 +322,7 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
                   imageUrl: cover,
                   fit: BoxFit.cover,
                   width: double.infinity,
+                  height: double.infinity,
                   httpHeaders: const {
                     "user-agent": "windows",
                   },

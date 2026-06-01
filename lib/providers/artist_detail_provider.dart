@@ -120,6 +120,9 @@ class ArtistDetailProvider extends ChangeNotifier {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
+                              settings: const RouteSettings(
+                                name: "/AlbumDetail",
+                              ),
                               builder: (_) => ChangeNotifierProvider(
                                 create: (_) => AlbumDetailProvider(),
                                 child: AlbumDetail(albumId: song.album.id),

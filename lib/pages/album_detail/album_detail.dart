@@ -7,13 +7,12 @@ import 'package:provider/provider.dart';
 import 'package:yao_music/theme/app_color.dart';
 import 'package:yao_music/theme/app_text.dart';
 
-import '../../components/music_cover.dart';
 import '../../constants/load_state.dart';
 import '../../models/album_detail.dart';
-import '../../models/set_list_detail.dart';
+import '../../models/search.dart';
+import '../../models/song_detail.dart';
 import '../../providers/album_detail_provider.dart';
-import '../../providers/set_list_provider.dart';
-import '../../theme/app_radius.dart';
+import '../../providers/song_detail_provider.dart';
 import '../../theme/app_space.dart';
 
 class AlbumDetail extends StatefulWidget {
@@ -61,6 +60,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AlbumDetailProvider>();
+    final playerProvider = context.read<SongDetailProvider>();
     bool loading = provider.loadState == LoadState.loading;
     final AlbumDetailModel detail = provider.detail;
     final Color bgColor = provider.bgColor;
@@ -173,12 +173,29 @@ class _AlbumDetailState extends State<AlbumDetail> {
                                     ),
                                   ),
                                   const SizedBox(height: YMusicSpacing.md),
-                                  SizedBox(
-                                    width: 200,
-                                    child: _actionButton(
-                                      icon:
-                                      Icons.play_arrow_rounded,
-                                      text: '播放',
+                                  GestureDetector(
+                                    onTap: () {
+                                      playerProvider.setPlayListAndPlay(
+                                          detail.song.map(
+                                                  (e) =>
+                                                  SingMiniInfo(
+                                                      id: e.id.toString(),
+                                                      coverUrl: e.album.picUrl,
+                                                      platform: SearchPlatform.netease,
+                                                      name: e.name,
+                                                      artistName: e.artistNames,
+                                                      albumName: e.album.name
+                                                  )).toList(),
+                                          0
+                                      );
+                                    },
+                                    child: SizedBox(
+                                      width: 200,
+                                      child: _actionButton(
+                                        icon:
+                                        Icons.play_arrow_rounded,
+                                        text: '播放',
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
@@ -249,10 +266,29 @@ class _AlbumDetailState extends State<AlbumDetail> {
                 itemBuilder: (context, index) {
                   return Column(
                     children: [
-                      _setListSongItem(
-                          song: detail.song![index],
-                          index: index,
-                          openSongInfo: (SongsOfAlbumDetail song) => provider.showSongInfoSheet(context, song)
+                      GestureDetector(
+                        onTap: () {
+                          playerProvider.setPlayListAndPlay(
+                              detail.song.map(
+                                      (e) =>
+                                      SingMiniInfo(
+                                          id: e.id.toString(),
+                                          coverUrl: e.album.picUrl,
+                                          platform: SearchPlatform.netease,
+                                          name: e.name,
+                                          artistName: e.artistNames,
+                                          albumName: e.album.name
+                                      )).toList(),
+                              index
+                          );
+                        },
+                        child: SizedBox(
+                          child: _setListSongItem(
+                              song: detail.song![index],
+                              index: index,
+                              openSongInfo: (SongsOfAlbumDetail song) => provider.showSongInfoSheet(context, song)
+                          ),
+                        ),
                       ),
                       if (index != detail.song.length - 1)
                         const Divider(

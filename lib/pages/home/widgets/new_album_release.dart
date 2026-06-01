@@ -63,6 +63,9 @@ class _NewAlbumReleaseState extends State<NewAlbumRelease> with AutomaticKeepAli
                     Navigator.push(
                       context,
                       MaterialPageRoute(
+                        settings: const RouteSettings(
+                          name: "/NewAlbumReleaseFull",
+                        ),
                         builder: (_) => const NewAlbumReleaseFull(),
                       ),
                     );
@@ -239,6 +242,9 @@ class _NewAlbumReleaseCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(
+                    name: "/AlbumDetail",
+                  ),
                   builder: (_) => ChangeNotifierProvider(
                     create: (_) => AlbumDetailProvider(),
                     child: AlbumDetail(albumId: album.id),

@@ -211,6 +211,9 @@ class _ArtistDetailState extends State<ArtistDetail> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(
+                              name: "/ArtistSongAll",
+                            ),
                             builder: (_) => MultiProvider(
                               providers: [
                                 ChangeNotifierProvider(
@@ -301,6 +304,9 @@ class _ArtistDetailState extends State<ArtistDetail> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
+                            settings: const RouteSettings(
+                              name: "/ArtistAlbumAll",
+                            ),
                             builder: (_) => MultiProvider(
                               providers: [
                                 ChangeNotifierProvider(
@@ -452,6 +458,9 @@ class _NewAlbumReleaseCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
+                  settings: const RouteSettings(
+                    name: "/AlbumDetail",
+                  ),
                   builder: (_) => ChangeNotifierProvider(
                     create: (_) => AlbumDetailProvider(),
                     child: AlbumDetail(albumId: album.id),

@@ -61,9 +61,13 @@ class _PersonalizedSetListState extends State<PersonalizedSetList> with Automati
               ),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.of(context, rootNavigator: false).push(
+                  Navigator.push(
+                    context,
                     MaterialPageRoute(
-                      builder: (_) => PersonalizedSetListFull(),
+                      settings: const RouteSettings(
+                        name: "/PersonalizedSetListFull",
+                      ),
+                      builder: (_) => const PersonalizedSetListFull(),
                     ),
                   );
                 },
@@ -251,13 +255,15 @@ class _PersonalizedSetListCard extends StatelessWidget {
         children: [
           GestureDetector(
               onTap: () {
-                Navigator.of(context).push(
+                Navigator.push(
+                  context,
                   MaterialPageRoute(
+                    settings: const RouteSettings(
+                      name: "/SetListDetail",
+                    ),
                     builder: (_) => ChangeNotifierProvider(
                       create: (_) => SetListProvider(),
-                      child: SetListDetail(
-                        setListId: personalized.id,
-                      ),
+                      child: SetListDetail(setListId: personalized.id),
                     ),
                   ),
                 );

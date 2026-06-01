@@ -92,7 +92,6 @@ class PlayerManager {
   Future<void> nextSong() async {
     if (playlist.isEmpty) {
       player.seek(Duration.zero);
-      audioHandler.pause();
       return;
     }
     switch (playMode) {
@@ -116,7 +115,6 @@ class PlayerManager {
   Future<void> previousSong() async {
     if (playlist.isEmpty) {
       player.seek(Duration.zero);
-      audioHandler.pause();
       return;
     }
     switch (playMode) {
