@@ -15,6 +15,13 @@ class ArtistOfSetListSong implements ArtistBaseModel {
     required this.id
   });
 
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
+
   factory ArtistOfSetListSong.fromJson(Map<String, dynamic> json) {
     return ArtistOfSetListSong(
       id: json['id'] ?? 0,
@@ -39,6 +46,14 @@ class AlbumOfSetListSong implements AlbumBaseModel {
     required this.id,
     required this.picUrl
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'picUrl': picUrl
+    };
+  }
 
   factory AlbumOfSetListSong.fromJson(Map<String, dynamic> json) {
     return AlbumOfSetListSong(
@@ -75,6 +90,15 @@ class SetListDetailSongsModel implements SongBaseModel {
     required this.artistList,
     required this.album
   });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'ar': artistList.map((e) => e.toJson()).toList(),
+      'al': album.toJson(),
+    };
+  }
 
   factory SetListDetailSongsModel.fromJson(Map<String, dynamic> json) {
     return SetListDetailSongsModel(
@@ -118,6 +142,39 @@ class SetListDetailModel {
       coverImgUrl: json['coverImgUrl'] ?? '',
       description: json['description'] ?? '',
       updateTime: json['updateTime'] ?? '',
+      songs: (json['songs'] as List<dynamic>?)
+          ?.map((e) => SetListDetailSongsModel.fromJson(e))
+          .toList() ?? [],
+    );
+  }
+}
+
+class LocalSetListDetailModel {
+  /// id
+  final int id;
+  /// 歌单名称
+  final String name;
+  /// 歌曲列表
+  final List<SetListDetailSongsModel> songs;
+
+  LocalSetListDetailModel({
+    required this.id,
+    required this.name,
+    required this.songs
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'songs': songs.map((e) => e.toJson()).toList(),
+    };
+  }
+
+  factory LocalSetListDetailModel.fromJson(Map<String, dynamic> json) {
+    return LocalSetListDetailModel(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
       songs: (json['songs'] as List<dynamic>?)
           ?.map((e) => SetListDetailSongsModel.fromJson(e))
           .toList() ?? [],

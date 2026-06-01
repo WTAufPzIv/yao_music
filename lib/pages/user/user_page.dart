@@ -9,7 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../constants/load_state.dart';
 import '../../models/login.dart';
+import '../../models/set_list_detail.dart';
 import '../../pages/login/login_page.dart';
+import '../../providers/local_set_list_detail.dart';
 import '../../providers/login_provider.dart';
 import '../../providers/set_list_provider.dart';
 import '../../theme/app_color.dart';
@@ -17,9 +19,7 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_space.dart';
 import '../../theme/app_text.dart';
 import '../set_list_detail/set_list_detail.dart';
-
-// 你项目里原有的网易云歌单模型
-// import '...UserSetListModel...';
+import 'local_play_list.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({super.key});
@@ -32,7 +32,7 @@ class UserPageState extends State<UserPage> {
   final TextEditingController _playlistNameController = TextEditingController();
 
   bool _localLoading = true;
-  List<LocalPlaylistModel> _localPlaylists = [];
+  List<LocalSetListDetailModel> _localPlaylists = [];
 
   @override
   void initState() {
@@ -129,11 +129,10 @@ class UserPageState extends State<UserPage> {
     final randomId = DateTime.now().millisecondsSinceEpoch + Random().nextInt(99999);
     final coverUrl = 'https://picsum.photos/seed/$randomId/500/500';
 
-    final playlist = LocalPlaylistModel(
+    final playlist = LocalSetListDetailModel(
       id: randomId,
       name: name.trim(),
-      coverUrl: coverUrl,
-      createTime: DateTime.now().millisecondsSinceEpoch,
+      songs: []
     );
 
     setState(() {
@@ -481,9 +480,12 @@ class UserPageState extends State<UserPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          settings: const RouteSettings(name: "/LocalPlaylistDetail"),
-                          builder: (_) => LocalPlaylistDetailPage(
-                            playlist: _localPlaylists[index],
+                          settings: const RouteSettings(name: "/LocalSetListDetail"),
+                          builder: (_) => ChangeNotifierProvider(
+                            create: (_) => LocalSetListDetailProvider(),
+                            child: LocalSetListDetail(
+                                detail: _localPlaylists[index]
+                            ),
                           ),
                         ),
                       );
@@ -703,7 +705,7 @@ class _UserSetListCard extends StatelessWidget {
 }
 
 class _LocalPlaylistCard extends StatelessWidget {
-  final LocalPlaylistModel playlist;
+  final LocalSetListDetailModel playlist;
   final VoidCallback onTap;
 
   const _LocalPlaylistCard({
@@ -722,12 +724,22 @@ class _LocalPlaylistCard extends StatelessWidget {
             onTap: onTap,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(YMusicRadius.md),
-              child: CachedNetworkImage(
-                imageUrl: playlist.coverUrl,
-                httpHeaders: {'user-agent': 'windows'},
-                width: 180,
-                height: 180,
-                fit: BoxFit.cover,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(YMusicRadius.md),
+                child: Image.asset(
+                  "/1.png",
+                  width: 180,
+                  height: 180,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) {
+                    return Container(
+                      width: 180,
+                      height: 180,
+                      color: Colors.white10,
+                      child: const Icon(Icons.music_note, color: Colors.white54, size: 46),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -744,118 +756,10 @@ class _LocalPlaylistCard extends StatelessWidget {
   }
 }
 
-class LocalPlaylistDetailPage extends StatelessWidget {
-  final LocalPlaylistModel playlist;
-
-  const LocalPlaylistDetailPage({
-    super.key,
-    required this.playlist,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: YMusicColors.background,
-      appBar: AppBar(
-        backgroundColor: YMusicColors.background,
-        title: const Text('本地歌单'),
-        foregroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(20),
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(24),
-            child: CachedNetworkImage(
-              imageUrl: playlist.coverUrl,
-              httpHeaders: {'user-agent': 'windows'},
-              height: 280,
-              fit: BoxFit.cover
-            ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            playlist.name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'ID: ${playlist.id}',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.65),
-              fontSize: 13,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '创建时间: ${DateTime.fromMillisecondsSinceEpoch(playlist.createTime)}',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.65),
-              fontSize: 13,
-            ),
-          ),
-          const SizedBox(height: 28),
-          Container(
-            padding: const EdgeInsets.all(18),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(22),
-            ),
-            child: Text(
-              '这里先作为本地歌单的详情页占位。你后面如果要继续做“添加歌曲 / 删除歌单 / 重命名 / 排序”，直接在这个页面上扩展就行。',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.85),
-                height: 1.5,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class LocalPlaylistModel {
-  final int id;
-  final String name;
-  final String coverUrl;
-  final int createTime;
-
-  LocalPlaylistModel({
-    required this.id,
-    required this.name,
-    required this.coverUrl,
-    required this.createTime,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'coverUrl': coverUrl,
-      'createTime': createTime,
-    };
-  }
-
-  factory LocalPlaylistModel.fromJson(Map<String, dynamic> json) {
-    return LocalPlaylistModel(
-      id: json['id'] ?? 0,
-      name: json['name'] ?? '',
-      coverUrl: json['coverUrl'] ?? '',
-      createTime: json['createTime'] ?? 0,
-    );
-  }
-}
-
 class LocalPlaylistStorage {
   static const String _storageKey = 'ymusic_local_playlists';
 
-  static Future<List<LocalPlaylistModel>> load() async {
+  static Future<List<LocalSetListDetailModel>> load() async {
     final prefs = await SharedPreferences.getInstance();
     final raw = prefs.getString(_storageKey);
 
@@ -866,14 +770,14 @@ class LocalPlaylistStorage {
     try {
       final list = jsonDecode(raw) as List<dynamic>;
       return list
-          .map((e) => LocalPlaylistModel.fromJson(Map<String, dynamic>.from(e as Map)))
+          .map((e) => LocalSetListDetailModel.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList();
     } catch (_) {
       return [];
     }
   }
 
-  static Future<void> save(List<LocalPlaylistModel> playlists) async {
+  static Future<void> save(List<LocalSetListDetailModel> playlists) async {
     final prefs = await SharedPreferences.getInstance();
     final raw = jsonEncode(playlists.map((e) => e.toJson()).toList());
     await prefs.setString(_storageKey, raw);
