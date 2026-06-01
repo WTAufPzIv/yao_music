@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
 
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../models/song_detail.dart';
@@ -13,6 +15,8 @@ enum PlayMode {
   shuffle,    // 随机播放
 }
 
+final storage = FlutterSecureStorage();
+
 class PlayerManager {
   PlayerManager._();
   static final PlayerManager instance = PlayerManager._();
@@ -21,6 +25,9 @@ class PlayerManager {
   List<SingMiniInfo> playlist = [];
   int currentIndex = -1;
   PlayMode playMode = PlayMode.sequence;
+  static const String playlistKey = 'play_list';
+  static const String currentIndexKey = 'current_index';
+  static const String playModeKey = 'play_mode';
 
   Future<void> init() async {
     player = AudioPlayer();
@@ -33,6 +40,26 @@ class PlayerManager {
       ),
     );
     _listenPlayer();
+    (audioHandler).onNext = () => nextSong();
+    (audioHandler).onPrevious = () => previousSong();
+    _playCurrentIndex();
+  }
+
+  void loadFromStorage () async {
+    final playlistValue = await storage.read(key: playlistKey);
+    playlist = playlistValue == null
+        ? <SingMiniInfo>[]
+        : (jsonDecode(playlistValue) as List).map((e) => SingMiniInfo.fromJson(e)).toList();
+    final currentIndexValue = await storage.read(key: currentIndexKey);
+    currentIndex = int.tryParse(currentIndexValue ?? '') ?? -1;
+    final playModeValue = await storage.read(key: playModeKey);
+    playMode = PlayMode.values.firstWhere(
+          (e) => e.name == playModeValue,
+      orElse: () => PlayMode.sequence,
+    );
+    if (playlist.isNotEmpty && currentIndex != -1) {
+      _playCurrentIndex();
+    }
   }
 
   void _listenPlayer() {
@@ -70,6 +97,16 @@ class PlayerManager {
   }) async {
     playlist = songs;
     currentIndex = startIndex;
+    await storage.write(
+      key: playlistKey,
+      value: jsonEncode(
+        playlist.map((e) => e.toJson()).toList(),
+      ),
+    );
+    await storage.write(
+      key: currentIndexKey,
+      value: currentIndex.toString(),
+    );
     _playCurrentIndex();
   }
 
@@ -83,7 +120,6 @@ class PlayerManager {
     required String url,
     required String cover
   }) async {
-    print(url);
     await player.setUrl(url);
     _updateMediaItem(song, cover);
     await audioHandler.play();
@@ -132,6 +168,7 @@ class PlayerManager {
 
   Future<void> _playCurrentIndex() async {
     final song = playlist[currentIndex];
+    print(onPlayRequest);
     if (onPlayRequest != null) {
       // audioHandler.pause();
       // player.seek(Duration.zero);
@@ -141,11 +178,26 @@ class PlayerManager {
     }
   }
 
+  Future<void> _readyCurrentIndex() async {
+    final song = playlist[currentIndex];
+    if (onPlayRequest != null) {
+      // audioHandler.pause();
+      // player.seek(Duration.zero);
+      await onPlayRequest!(
+        song,
+        justReady: true
+      );
+    }
+  }
+
   VoidCallback? onPlaylistChanged;
 
-  Future<void> Function(SingMiniInfo song, )? onPlayRequest;
+  Future<void> Function(
+      SingMiniInfo song,
+      { bool? justReady }
+      )? onPlayRequest;
 
-  void togglePlayMode() {
+  void togglePlayMode() async {
     switch (playMode) {
       case PlayMode.sequence:
         playMode = PlayMode.repeatOne;
@@ -157,6 +209,10 @@ class PlayerManager {
         playMode = PlayMode.sequence;
         break;
     }
+    await storage.write(
+      key: playModeKey,
+      value: playMode.name,
+    );
     onPlaylistChanged?.call();
   }
 
@@ -168,7 +224,7 @@ class PlayerManager {
         artist: song.artistName,
         album: song.albumName,
         artUri: Uri.parse(cover),
-        duration: player.duration
+        duration: player.duration,
       ),
     );
   }

@@ -19,6 +19,16 @@ class SingMiniInfo {
     this.picId
   });
 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'platform': platform.name,
+    'name': name,
+    'picId': picId,
+    'artistName': artistName,
+    'albumName': albumName,
+    'coverUrl': coverUrl,
+  };
+
   factory SingMiniInfo.fromJson(Map<String, dynamic> json) {
     final SingMiniInfo temp = SingMiniInfo(
       id: json['id'] ?? 0,

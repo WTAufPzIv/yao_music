@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:yao_music/theme/app_color.dart';
 
 class PlayerSlider extends StatelessWidget {
 
@@ -26,6 +27,7 @@ class PlayerSlider extends StatelessWidget {
                 positionSnapshot.data ??
                     Duration.zero;
             return Slider(
+              activeColor: YMusicColors.primary,
               value: position.inMilliseconds.clamp(
                 0,
                 duration.inMilliseconds,

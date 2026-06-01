@@ -102,14 +102,16 @@ class _SearchResultState extends State<SearchResult> {
                         final item = list[index];
                         return GestureDetector(
                           onTap: () {
-                            playerProvider.playSong(SingMiniInfo(
-                              id: item.id as dynamic,
-                              platform: provider.platform,
-                              name: item.name,
-                              artistName: item.artistNames,
-                              albumName: item.album,
-                              picId: item.picId
-                            ));
+                            playerProvider.setPlayListAndPlay([
+                              SingMiniInfo(
+                                  id: item.id as dynamic,
+                                  platform: provider.platform,
+                                  name: item.name,
+                                  artistName: item.artistNames,
+                                  albumName: item.album,
+                                  picId: item.picId
+                              )
+                            ], 0);
                           },
                           child: _buildResultItem(item),
                         );

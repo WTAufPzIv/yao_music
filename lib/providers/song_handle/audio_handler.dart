@@ -4,6 +4,9 @@ import 'package:just_audio/just_audio.dart';
 class MusicAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   final AudioPlayer player;
 
+  Future<void> Function()? onNext;
+  Future<void> Function()? onPrevious;
+
   void _broadcastState(PlayerState state) {
     playbackState.add(
       PlaybackState(
@@ -84,4 +87,14 @@ class MusicAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
       Duration position,
       ) =>
       player.seek(position);
+
+  @override
+  Future<void> skipToNext() async {
+    await onNext?.call();
+  }
+
+  @override
+  Future<void> skipToPrevious() async {
+    await onPrevious?.call();
+  }
 }

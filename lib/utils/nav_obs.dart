@@ -16,14 +16,12 @@ class AppRouteObserver extends RouteObserver<PageRoute<dynamic>> {
 
   @override
   void didPush(Route route, Route? previousRoute) {
-    print('didPush: ${route.settings.name}');
     RouteManager.currentRoute = route.settings.name ?? "";
     _refreshMiniPlayer();
   }
 
   @override
   void didPop(Route route, Route? previousRoute) {
-    print('didPop: ${previousRoute?.settings.name}');
     RouteManager.currentRoute = previousRoute?.settings.name ?? "";
     _refreshMiniPlayer();
   }

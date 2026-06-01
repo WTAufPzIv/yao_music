@@ -28,6 +28,7 @@ class SongDetailProvider extends ChangeNotifier {
 
   SongDetailProvider() {
     _manager.onPlayRequest = playSong;
+    _manager.loadFromStorage();
   }
 
   Future<void> togglePlay() async {
@@ -58,7 +59,7 @@ class SongDetailProvider extends ChangeNotifier {
     currentCoverImage = '';
   }
 
-  Future<void> playSong(SingMiniInfo mini) async {
+  Future<void> playSong(SingMiniInfo mini, { bool? justReady = false }) async {
     if (mini.id == null || mini.id.isEmpty) return;
     if (currentBaseInfo.id == mini.id) {
       if (!_manager.playing) {
@@ -76,9 +77,6 @@ class SongDetailProvider extends ChangeNotifier {
           platform: currentBaseInfo.platform
       ));
       if (result == null || result.isEmpty || result.length == 0) {
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   const SnackBar(content: Text('播放失败')),
-        // );
         loadState = LoadState.success;
         notifyListeners();
         return;
@@ -87,6 +85,7 @@ class SongDetailProvider extends ChangeNotifier {
       visible = true;
       loadState = LoadState.success;
       notifyListeners();
+      if (justReady != null && justReady == true) return;
       await _manager.playSong(
         song: mini,
         url: currentUrl,
