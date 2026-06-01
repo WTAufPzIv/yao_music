@@ -298,7 +298,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
                           color: Colors.white12,
                         ) else
                         const SizedBox(
-                          height: YMusicSpacing.xxxl,
+                          height: 70,
                         )
                     ],
                   );

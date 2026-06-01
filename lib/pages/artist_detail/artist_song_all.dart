@@ -4,7 +4,10 @@ import 'package:provider/provider.dart';
 import 'package:yao_music/constants/load_state.dart';
 
 import '../../models/artist_detail.dart';
+import '../../models/search.dart';
+import '../../models/song_detail.dart';
 import '../../providers/artist_detail_provider.dart';
+import '../../providers/song_detail_provider.dart';
 
 class ArtistSongAll extends StatefulWidget {
   final int artistId;
@@ -43,6 +46,7 @@ class _ArtistSongAllState extends State<ArtistSongAll> {
   Widget build(BuildContext context) {
     final artistDetailProvider = context.read<ArtistDetailProvider>();
     final provider = context.watch<ArtistAllSongProvider>();
+    final playerProvider = context.read<SongDetailProvider>();
     final list = provider.list;
     final bool loading = provider.loading == LoadState.loading;
     return Scaffold(
@@ -68,10 +72,32 @@ class _ArtistSongAllState extends State<ArtistSongAll> {
                   return _buildBottomLoader(provider);
                 }
                 final song = list[index];
-                return _buildSongItem(song, artistDetailProvider);
+                return GestureDetector(
+                  onTap: () {
+                    playerProvider.setPlayListAndPlay(
+                        list.map(
+                                (e) =>
+                                SingMiniInfo(
+                                    id: e.id.toString(),
+                                    coverUrl: e.album.picUrl,
+                                    platform: SearchPlatform.netease,
+                                    name: e.name,
+                                    artistName: e.artistNames,
+                                    albumName: e.album.name
+                                )).toList(),
+                        index
+                    );
+                  },
+                  child: SizedBox(
+                    child: _buildSongItem(song, artistDetailProvider)
+                  ),
+                );
               },
             )
           ),
+          const SizedBox(
+            height: 70,
+          )
         ],
       ),
     );

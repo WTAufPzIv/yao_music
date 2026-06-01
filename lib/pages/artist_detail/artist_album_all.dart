@@ -169,7 +169,9 @@ class _ArtistAlbumAllState extends State<ArtistAlbumAll> {
           ),
           /// 底部安全距离
           const SliverToBoxAdapter(
-            child: SizedBox(height: 40),
+            child: SizedBox(
+              height: 70,
+            ),
           ),
         ],
       ),

@@ -7,7 +7,10 @@ import 'package:yao_music/providers/artist_detail_provider.dart';
 
 import '../../components/music_cover.dart';
 import '../../constants/load_state.dart';
+import '../../models/search.dart';
+import '../../models/song_detail.dart';
 import '../../providers/album_detail_provider.dart';
+import '../../providers/song_detail_provider.dart';
 import '../../theme/app_color.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_space.dart';
@@ -67,6 +70,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<ArtistDetailProvider>();
+    final playerProvider = context.read<SongDetailProvider>();
     bool loading = provider.loadState == LoadState.loading;
     final ArtistDetailModel detail = provider.detail;
     // 每页5个
@@ -280,10 +284,29 @@ class _ArtistDetailState extends State<ArtistDetail> {
                                 ),
                                 itemBuilder: (context, index) {
                                   final song = pageSongs[index];
-                                  return _MusicItem(
-                                      song: song,
-                                      loading: loading,
-                                      openSongInfo: (SongsOfArtistDetail song) => provider.showSongInfoSheet(context, song)
+                                  return GestureDetector(
+                                    onTap: () {
+                                      playerProvider.setPlayListAndPlay(
+                                          detail.song.map(
+                                                  (e) =>
+                                                  SingMiniInfo(
+                                                      id: e.id.toString(),
+                                                      coverUrl: e.album.picUrl,
+                                                      platform: SearchPlatform.netease,
+                                                      name: e.name,
+                                                      artistName: e.artistNames,
+                                                      albumName: e.album.name
+                                                  )).toList(),
+                                          index
+                                      );
+                                    },
+                                    child: SizedBox(
+                                      child: _MusicItem(
+                                          song: song,
+                                          loading: loading,
+                                          openSongInfo: (SongsOfArtistDetail song) => provider.showSongInfoSheet(context, song)
+                                      ),
+                                    ),
                                   );
                                 },
                               ),
@@ -361,6 +384,9 @@ class _ArtistDetailState extends State<ArtistDetail> {
                       ),
                     )
                   ),
+                  const SizedBox(
+                    height: 70,
+                  )
                 ],
               ),
             )

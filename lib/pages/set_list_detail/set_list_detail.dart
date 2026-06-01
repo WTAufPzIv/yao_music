@@ -253,14 +253,6 @@ class _SetListDetailState extends State<SetListDetail> {
                                     )).toList(),
                             index
                         );
-                        // playerProvider.playSong(SingMiniInfo(
-                        //     id: song.id,
-                        //     platform: SearchPlatform.netease,
-                        //     name: song.name,
-                        //     artistName: song.artistNames,
-                        //     albumName: song.album.name,
-                        //     coverUrl: song.album.picUrl
-                        // ));
                       },
                       child: _setListSongItem(
                           song: detail.songs![index],
@@ -276,7 +268,7 @@ class _SetListDetailState extends State<SetListDetail> {
                         color: Colors.white12,
                       ) else
                       const SizedBox(
-                        height: YMusicSpacing.xxxl,
+                        height: 80,
                       )
                   ],
                 );
