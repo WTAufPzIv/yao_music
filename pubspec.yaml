@@ -46,6 +46,7 @@ dependencies:
   just_audio: ^0.10.5
   audio_service: ^0.18.18
   audio_session: ^0.2.3
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_launcher_icons: ^0.14.4

@@ -1,65 +1,54 @@
-import 'dart:ui';
+import 'dart:convert';
+import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:yao_music/theme/app_color.dart';
-import 'package:yao_music/theme/app_space.dart';
-import 'package:yao_music/theme/app_text.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../components/music_cover.dart';
 import '../../constants/load_state.dart';
 import '../../models/login.dart';
 import '../../pages/login/login_page.dart';
 import '../../providers/login_provider.dart';
 import '../../providers/set_list_provider.dart';
+import '../../theme/app_color.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_space.dart';
+import '../../theme/app_text.dart';
 import '../set_list_detail/set_list_detail.dart';
 
+// 你项目里原有的网易云歌单模型
+// import '...UserSetListModel...';
+
 class UserPage extends StatefulWidget {
-  const UserPage({ super.key });
+  const UserPage({super.key});
 
   @override
   State<UserPage> createState() => UserPageState();
 }
 
 class UserPageState extends State<UserPage> {
-  final ScrollController _scrollController = ScrollController();
-  /// 滚动距离
-  double scrollOffset = 0;
-  /// 顶部标题动画进度
-  double get collapseProgress {
-    if (scrollOffset <= 300) return 0;
-    final progress = ((scrollOffset - 300) / 60).clamp(0.0, 1.0);
-    return progress;
-  }
+  final TextEditingController _playlistNameController = TextEditingController();
 
-  final PageController controller = PageController(
-    viewportFraction: 0.9,
-  );
+  bool _localLoading = true;
+  List<LocalPlaylistModel> _localPlaylists = [];
 
   @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       refreshAuthStatus();
     });
-    /// 监听滚动
-    _scrollController.addListener(_onScroll);
+
+    _loadLocalPlaylists();
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
+    _playlistNameController.dispose();
     super.dispose();
-  }
-
-  void _onScroll() {
-    setState(() {
-      scrollOffset = _scrollController.offset;
-    });
   }
 
   Future<void> refreshAuthStatus() async {
@@ -67,14 +56,106 @@ class UserPageState extends State<UserPage> {
     await context.read<LoginProvider>().loadLoginStatus();
   }
 
+  Future<void> _loadLocalPlaylists() async {
+    final list = await LocalPlaylistStorage.load();
+    if (!mounted) return;
+    setState(() {
+      _localPlaylists = list;
+      _localLoading = false;
+    });
+  }
+
+  Future<void> _saveLocalPlaylists() async {
+    await LocalPlaylistStorage.save(_localPlaylists);
+  }
+
+  Future<void> _createLocalPlaylist() async {
+    _playlistNameController.clear();
+
+    final name = await showDialog<String>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: const Color(0xff1c1c1e),
+          title: const Text(
+            '创建本地歌单',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: TextField(
+            controller: _playlistNameController,
+            autofocus: true,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: '请输入歌单名称',
+              hintStyle: TextStyle(color: Colors.white.withOpacity(0.45)),
+              filled: true,
+              fillColor: Colors.white.withOpacity(0.08),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: const BorderSide(color: Color(0xffff375f)),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: Text(
+                '取消',
+                style: TextStyle(color: Colors.white.withOpacity(0.75)),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                final value = _playlistNameController.text.trim();
+                if (value.isEmpty) return;
+                Navigator.pop(dialogContext, value);
+              },
+              child: const Text(
+                '创建',
+                style: TextStyle(color: Color(0xffff375f)),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (name == null || name.trim().isEmpty) return;
+
+    final randomId = DateTime.now().millisecondsSinceEpoch + Random().nextInt(99999);
+    final coverUrl = 'https://picsum.photos/seed/$randomId/500/500';
+
+    final playlist = LocalPlaylistModel(
+      id: randomId,
+      name: name.trim(),
+      coverUrl: coverUrl,
+      createTime: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    setState(() {
+      _localPlaylists.insert(0, playlist);
+    });
+    await _saveLocalPlaylists();
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('已创建本地歌单：${playlist.name}'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   Future<void> _goLogin() async {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        settings: const RouteSettings(
-          name: "/LoginPage",
-        ),
-        builder: (_) => LoginPage(),
+        settings: const RouteSettings(name: "/LoginPage"),
+        builder: (_) => const LoginPage(),
       ),
     );
 
@@ -87,204 +168,407 @@ class UserPageState extends State<UserPage> {
   @override
   Widget build(BuildContext context) {
     final loginProvider = context.watch<LoginProvider>();
-    bool loading = loginProvider.loadState == LoadState.loading;
+    final userInfo = loginProvider.userinfo?.userinfo;
+    final isLoggedIn = (userInfo?.userId ?? 0) > 0;
+
     return Scaffold(
       backgroundColor: YMusicColors.background,
-      body: loading ? const Center(
-        child: CupertinoActivityIndicator(),
-      ) : loginProvider?.userinfo?.userinfo?.userId != null && (loginProvider.userinfo.userinfo.userId) > 0 ? AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        color: YMusicColors.background,
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            SliverAppBar(
-              pinned: true,
-              elevation: 0,
-              expandedHeight: 300,
-              backgroundColor: Colors.transparent,
-              automaticallyImplyLeading: false,
-              flexibleSpace: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      /// 背景封面
-                      CachedNetworkImage(
-                        imageUrl: '${loginProvider.userinfo.userinfo.backgroundUrl}?param=400y400',
-                        width: 300,
-                        height: 300,
-                        httpHeaders: { "user-agent": 'windows' },
-                        fit: BoxFit.cover,
+      body: DefaultTabController(
+        length: 2,
+        child: NestedScrollView(
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverOverlapAbsorber(
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                sliver: SliverAppBar(
+                  pinned: true,
+                  elevation: 0,
+                  backgroundColor: YMusicColors.background,
+                  automaticallyImplyLeading: false,
+                  expandedHeight: 400,
+                  title: Text(
+                    '我的主页',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: YMusicTextStyles.router,
+                  ),
+                  actions: [
+                    if (isLoggedIn)
+                      IconButton(
+                        onPressed: () {
+                          loginProvider.showLogoutSheet(context);
+                        },
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: Colors.white,
+                        ),
                       ),
-                      /// 渐变遮罩
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [
-                              YMusicColors.background.withOpacity(0.05),
-                              YMusicColors.background,
+                  ],
+                  bottom: const TabBar(
+                    labelColor: Colors.white,
+                    unselectedLabelColor: Colors.white70,
+                    indicatorColor: Color(0xffff375f),
+                    tabs: [
+                      Tab(text: '网易云歌单'),
+                      Tab(text: '本地歌单'),
+                    ],
+                  ),
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Stack(
+                      fit: StackFit.expand,
+                      children: [
+                        _buildHeaderBackground(isLoggedIn, userInfo),
+                        Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [
+                                Colors.transparent,
+                                YMusicColors.background.withOpacity(0.25),
+                                YMusicColors.background,
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          left: 20,
+                          right: 20,
+                          bottom: 70,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              _buildAvatar(isLoggedIn, userInfo),
+                              const SizedBox(height: 16),
+                              Text(
+                                isLoggedIn ? (userInfo?.nickname ?? '') : '尚未登录',
+                                textAlign: TextAlign.center,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 26,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                isLoggedIn
+                                    ? (userInfo?.signature ?? '这个人很懒，什么都没写')
+                                    : '登录后可同步你的收藏、歌单和播放记录',
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.75),
+                                  fontSize: 13,
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                      ),
-                      Positioned(
-                        left: 20,
-                        right: 20,
-                        bottom: 20,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 120,
-                              height: 120,
-                              decoration: BoxDecoration(
-                                borderRadius:
-                                BorderRadius.circular(16),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black
-                                        .withOpacity(0.35),
-                                    blurRadius: 30,
-                                    offset: const Offset(0, 15),
-                                  ),
-                                ],
-                              ),
-                              child: ClipRRect(
-                                borderRadius:
-                                BorderRadius.circular(16),
-                                child: Image.network(
-                                  '${loginProvider.userinfo.userinfo.avatarUrl ?? ''}?param=800y800',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
-                      ),
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          color: YMusicColors.background.withOpacity(collapseProgress),
-                          child: Column(
-                            children: [
-                              SizedBox(height: MediaQuery.of(context).padding.top),
-                              SizedBox(
-                                height: kToolbarHeight,
-                                child: Row(
-                                  children: [
-                                    const SizedBox(width: YMusicSpacing.md),
-                                    Expanded(
-                                      child: Opacity(
-                                        opacity: collapseProgress,
-                                        child: Transform.translate(
-                                          offset: Offset(
-                                            0,
-                                            20 * (1 - collapseProgress),
-                                          ),
-                                          child: Text(
-                                            '${loginProvider.userinfo.userinfo.nickname}的主页',
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 17,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(onPressed: () {
-                                      loginProvider.showLogoutSheet(context);
-                                    }, icon: const Icon(
-                                      Icons.more_vert,
-                                      color: Colors.white,
-                                    ))
-                                  ],
-                                ),
-                              ),
-                            ],
-                          )
-                        ),
-                      ),
-                    ],
-                  );
-                }
-              )
-            ),
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    loginProvider.userinfo.userinfo.nickname ?? '',
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: YMusicTextStyles.title3,
+                      ],
+                    ),
                   ),
-                  SizedBox(height: YMusicSpacing.md),
-                  Text(
-                    loginProvider.userinfo.userinfo.signature ?? '',
-                    textAlign: TextAlign.center,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: YMusicTextStyles.body.copyWith(color: YMusicTextStyles.title3.color?.withOpacity(0.5)),
-                  ),
-                  SizedBox(height: YMusicSpacing.md),
-                ],
+                ),
               ),
+            ];
+          },
+          body: TabBarView(
+            children: [
+              Builder(
+                builder: (context) {
+                  return _buildRemoteTab(context, loginProvider, isLoggedIn);
+                },
+              ),
+              Builder(
+                builder: (context) {
+                  return _buildLocalTab(context);
+                },
+              ),
+            ],
+          )
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderBackground(bool isLoggedIn, dynamic userInfo) {
+    final bgUrl = isLoggedIn && (userInfo?.backgroundUrl ?? '').toString().isNotEmpty
+        ? '${userInfo.backgroundUrl}?param=1200y1200'
+        : 'https://picsum.photos/seed/ymusic-user-header/1200/1200';
+
+    return CachedNetworkImage(
+      imageUrl: bgUrl,
+      fit: BoxFit.cover,
+      httpHeaders: {'user-agent': 'windows'},
+    );
+  }
+
+  Widget _buildAvatar(bool isLoggedIn, dynamic userInfo) {
+    final avatarUrl = isLoggedIn && (userInfo?.avatarUrl ?? '').toString().isNotEmpty
+        ? '${userInfo.avatarUrl}?param=800y800'
+        : 'https://picsum.photos/seed/ymusic-user-avatar/800/800';
+
+    return Container(
+      width: 120,
+      height: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.35),
+            blurRadius: 30,
+            offset: const Offset(0, 15),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(18),
+        child: isLoggedIn
+            ? CachedNetworkImage(
+              imageUrl: avatarUrl,
+              httpHeaders: {'user-agent': 'windows'},
+              fit: BoxFit.cover,
+            ) : Container(
+              color: Colors.white10,
+              child: const Icon(Icons.person, color: Colors.white, size: 56),
             ),
-            SliverPadding(
+      ),
+    );
+  }
+
+  Widget _buildRemoteTab(
+      BuildContext context,
+      LoginProvider loginProvider,
+      bool isLoggedIn,
+      ) {
+    final loadState = loginProvider.loadState;
+    final userInfo = loginProvider.userinfo?.userinfo;
+    final remoteList = loginProvider.userinfo?.setList ?? [];
+
+    if (loadState == LoadState.loading) {
+      return const Center(
+        child: CupertinoActivityIndicator(),
+      );
+    }
+
+    if (!isLoggedIn) {
+      return CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverOverlapInjector(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+          ),
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Padding(
               padding: const EdgeInsets.fromLTRB(
-                YMusicSpacing.md,
-                YMusicSpacing.md,
-                YMusicSpacing.md,
-                70,
-              ),
-              sliver: SliverGrid(
-                delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                    return _UserSetListCard(
-                      setList: loginProvider.userinfo.setList[index],
-                    );
-                  },
-                  childCount: loginProvider.userinfo.setList.length,
-                ),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  /// 双列
-                  crossAxisCount: 2,
-                  /// 左右间距
-                  crossAxisSpacing: YMusicSpacing.md,
-                  /// 上下间距
-                  mainAxisSpacing: YMusicSpacing.md,
-                  /// 卡片宽高比例
-                  childAspectRatio: 0.8,
-                ),
-              ),
-            ),
-          ],
-        )
-      ) : Center(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsetsGeometry.symmetric(
-                horizontal: YMusicSpacing.xxl,
-                vertical: 120
+                YMusicSpacing.xxl,
+                40,
+                YMusicSpacing.xxl,
+                80,
               ),
               child: _guestView(),
-            )
-          ],
+            ),
+          ),
+        ],
+      );
+    }
+
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverOverlapInjector(
+          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
         ),
-      )
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(
+            YMusicSpacing.md,
+            YMusicSpacing.md,
+            YMusicSpacing.md,
+            70,
+          ),
+          sliver: SliverGrid(
+            delegate: SliverChildBuilderDelegate(
+                  (context, index) {
+                return _UserSetListCard(
+                  setList: remoteList[index],
+                );
+              },
+              childCount: remoteList.length,
+            ),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: YMusicSpacing.md,
+              mainAxisSpacing: YMusicSpacing.md,
+              childAspectRatio: 0.8,
+            ),
+          ),
+        ),
+        if (remoteList.isEmpty)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Text(
+                '这里还没有歌单',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.7),
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildLocalTab(BuildContext context) {
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverOverlapInjector(
+          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+              YMusicSpacing.md,
+              YMusicSpacing.lg,
+              YMusicSpacing.md,
+              YMusicSpacing.md,
+            ),
+            child: _localCreateCard(),
+          ),
+        ),
+        if (_localLoading)
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: CupertinoActivityIndicator()),
+          )
+        else if (_localPlaylists.isEmpty)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  '还没有本地歌单，先创建一个吧',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.72),
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(
+              YMusicSpacing.md,
+              YMusicSpacing.sm,
+              YMusicSpacing.md,
+              70,
+            ),
+            sliver: SliverGrid(
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  return _LocalPlaylistCard(
+                    playlist: _localPlaylists[index],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          settings: const RouteSettings(name: "/LocalPlaylistDetail"),
+                          builder: (_) => LocalPlaylistDetailPage(
+                            playlist: _localPlaylists[index],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                },
+                childCount: _localPlaylists.length,
+              ),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: YMusicSpacing.md,
+                mainAxisSpacing: YMusicSpacing.md,
+                childAspectRatio: 0.8,
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _localCreateCard() {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: Colors.white.withOpacity(0.08)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: const Color(0xffff375f).withOpacity(0.18),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Icon(
+              Icons.add,
+              color: Color(0xffff375f),
+              size: 30,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '创建本地歌单',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '输入名称后自动生成 id 和封面',
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.65),
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          SizedBox(
+            height: 42,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xffff375f),
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                elevation: 0,
+              ),
+              onPressed: _createLocalPlaylist,
+              child: const Text('新建'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -356,9 +640,7 @@ class _UserSetListCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  settings: const RouteSettings(
-                    name: "/SetListDetail",
-                  ),
+                  settings: const RouteSettings(name: "/SetListDetail"),
                   builder: (_) => ChangeNotifierProvider(
                     create: (_) => SetListProvider(),
                     child: SetListDetail(
@@ -368,34 +650,232 @@ class _UserSetListCard extends StatelessWidget {
                 ),
               );
             },
-            child: /// 封面
-            setList.picUrl!.startsWith('http') ? MusicCover(
-              imageUrl: '${setList.picUrl}?param=300y300',
-              width: 180,
-              height: 180,
-              radius: YMusicRadius.md,
-            ): Image.asset(
-              setList.picUrl,
-              width: 180,
-              height: 180,
-              fit: BoxFit.cover,
-            ),
+            child: _buildCover(),
           ),
           const SizedBox(height: YMusicSpacing.md),
-          /// 标题
           Padding(
-            padding: EdgeInsets.only(
-                right: 0
-            ),
+            padding: const EdgeInsets.only(right: 0),
             child: Text(
-                setList.name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: YMusicTextStyles.bodySmall
+              setList.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: YMusicTextStyles.bodySmall,
             ),
-          )
+          ),
         ],
       ),
     );
+  }
+
+  Widget _buildCover() {
+    final pic = setList.picUrl ?? '';
+    if (pic.startsWith('http')) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(YMusicRadius.md),
+        child: CachedNetworkImage(
+          imageUrl: '$pic?param=300y300',
+          httpHeaders: {'user-agent': 'windows'},
+          width: 180,
+          height: 180,
+          fit: BoxFit.cover
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(YMusicRadius.md),
+      child: Image.asset(
+        pic,
+        width: 180,
+        height: 180,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) {
+          return Container(
+            width: 180,
+            height: 180,
+            color: Colors.white10,
+            child: const Icon(Icons.music_note, color: Colors.white54, size: 46),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _LocalPlaylistCard extends StatelessWidget {
+  final LocalPlaylistModel playlist;
+  final VoidCallback onTap;
+
+  const _LocalPlaylistCard({
+    required this.playlist,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 180,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: onTap,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(YMusicRadius.md),
+              child: CachedNetworkImage(
+                imageUrl: playlist.coverUrl,
+                httpHeaders: {'user-agent': 'windows'},
+                width: 180,
+                height: 180,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          const SizedBox(height: YMusicSpacing.md),
+          Text(
+            playlist.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: YMusicTextStyles.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LocalPlaylistDetailPage extends StatelessWidget {
+  final LocalPlaylistModel playlist;
+
+  const LocalPlaylistDetailPage({
+    super.key,
+    required this.playlist,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: YMusicColors.background,
+      appBar: AppBar(
+        backgroundColor: YMusicColors.background,
+        title: const Text('本地歌单'),
+        foregroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: CachedNetworkImage(
+              imageUrl: playlist.coverUrl,
+              httpHeaders: {'user-agent': 'windows'},
+              height: 280,
+              fit: BoxFit.cover
+            ),
+          ),
+          const SizedBox(height: 20),
+          Text(
+            playlist.name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            'ID: ${playlist.id}',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.65),
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            '创建时间: ${DateTime.fromMillisecondsSinceEpoch(playlist.createTime)}',
+            style: TextStyle(
+              color: Colors.white.withOpacity(0.65),
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 28),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.08),
+              borderRadius: BorderRadius.circular(22),
+            ),
+            child: Text(
+              '这里先作为本地歌单的详情页占位。你后面如果要继续做“添加歌曲 / 删除歌单 / 重命名 / 排序”，直接在这个页面上扩展就行。',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.85),
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LocalPlaylistModel {
+  final int id;
+  final String name;
+  final String coverUrl;
+  final int createTime;
+
+  LocalPlaylistModel({
+    required this.id,
+    required this.name,
+    required this.coverUrl,
+    required this.createTime,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'coverUrl': coverUrl,
+      'createTime': createTime,
+    };
+  }
+
+  factory LocalPlaylistModel.fromJson(Map<String, dynamic> json) {
+    return LocalPlaylistModel(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      coverUrl: json['coverUrl'] ?? '',
+      createTime: json['createTime'] ?? 0,
+    );
+  }
+}
+
+class LocalPlaylistStorage {
+  static const String _storageKey = 'ymusic_local_playlists';
+
+  static Future<List<LocalPlaylistModel>> load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_storageKey);
+
+    if (raw == null || raw.isEmpty) {
+      return [];
+    }
+
+    try {
+      final list = jsonDecode(raw) as List<dynamic>;
+      return list
+          .map((e) => LocalPlaylistModel.fromJson(Map<String, dynamic>.from(e as Map)))
+          .toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  static Future<void> save(List<LocalPlaylistModel> playlists) async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = jsonEncode(playlists.map((e) => e.toJson()).toList());
+    await prefs.setString(_storageKey, raw);
   }
 }
