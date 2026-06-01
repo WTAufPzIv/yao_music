@@ -100,6 +100,7 @@ class AlbumDetailProvider extends ChangeNotifier {
             constraints: BoxConstraints(
               maxHeight: maxHeight,
             ),
+            padding: EdgeInsetsGeometry.only(bottom: 35),
             decoration: BoxDecoration(
               color: const Color(0xFF1C1C1E).withOpacity(0.94),
               borderRadius: const BorderRadius.vertical(
@@ -208,6 +209,7 @@ class AlbumDetailProvider extends ChangeNotifier {
             constraints: BoxConstraints(
               maxHeight: 500,
             ),
+            padding: EdgeInsetsGeometry.only(bottom: 35),
             decoration: BoxDecoration(
               color: const Color(0xFF1C1C1E).withOpacity(0.94),
               borderRadius: const BorderRadius.vertical(
@@ -343,6 +345,7 @@ class AlbumDetailProvider extends ChangeNotifier {
               color: const Color(0xFF1C1C1E).withOpacity(0.96),
               borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
             ),
+            padding: EdgeInsetsGeometry.only(bottom: 35),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

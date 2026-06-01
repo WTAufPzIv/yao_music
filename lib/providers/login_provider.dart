@@ -102,6 +102,7 @@ class LoginProvider extends ChangeNotifier {
              constraints: BoxConstraints(
                maxHeight: 500,
              ),
+             padding: EdgeInsetsGeometry.only(bottom: 35),
              decoration: BoxDecoration(
                color: const Color(0xFF1C1C1E).withOpacity(0.94),
                borderRadius: const BorderRadius.vertical(
