@@ -220,6 +220,15 @@ class _SetListDetailState extends State<SetListDetail> {
                                           ),
                                         ),
                                       ),
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.more_vert,
+                                          color: YMusicColors.primary,
+                                        ),
+                                        onPressed: () {
+                                          provider.showAddToLocalSheet(context);
+                                        },
+                                      ),
                                     ],
                                   ),
                                 ),
