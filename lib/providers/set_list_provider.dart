@@ -542,7 +542,7 @@ class SetListProvider extends ChangeNotifier {
                               cover: 'https://picsum.photos/seed/$randomId/800/800',
                               songs: detail.songs.map((e){
                                 return LocalSetListDetailSongsModel(
-                                  id: e.id,
+                                  id: e.id.toString(),
                                   name: e.name,
                                   platform: SearchPlatform.netease,
                                   artistList: e.artistList,

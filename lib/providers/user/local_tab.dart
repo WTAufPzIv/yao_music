@@ -123,4 +123,92 @@ class LocalTabProvider extends ChangeNotifier {
       },
     );
   }
+
+  Future<void> addSongToLocalPlayList (LocalSetListDetailSongsModel item, BuildContext context) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: YMusicColors.background,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return SafeArea(
+            child: Container(
+              constraints: const BoxConstraints(
+                maxHeight: 500,
+              ),
+              padding: const EdgeInsets.only(
+                bottom: 35,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1C1C1E).withOpacity(0.94),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(28),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsetsGeometry.symmetric(
+                      vertical: YMusicSpacing.sm
+                    ),
+                  ),
+                  Text('添加到歌单'),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                      top: YMusicSpacing.md,
+                    ),
+                    child: Container(
+                      width: 36,
+                      height: 5,
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(999),
+                      ),
+                    ),
+                  ),
+
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: YMusicSpacing.md,
+                        vertical: YMusicSpacing.md,
+                      ),
+                      child: ListView.builder(
+                        itemCount: localPlaylists.length,
+                        itemBuilder: (context, index) {
+                          return InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () async {
+                              localPlaylists[index].songs.insert(0, item);
+                              _saveLocalPlaylists();
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                vertical: YMusicSpacing.lg,
+                                horizontal: YMusicSpacing.sm,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      localPlaylists[index].name,
+                                      style: YMusicTextStyles.body,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+        );
+      },
+    );
+  }
 }

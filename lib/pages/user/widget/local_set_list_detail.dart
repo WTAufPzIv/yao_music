@@ -246,7 +246,7 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                             song: LocalSetListDetailSongsModel(
                               id: detail.songs![index].id,
                               name: detail.songs![index].name,
-                              platform: SearchPlatform.netease,
+                              platform: detail.songs![index].platform,
                               artistList: detail.songs![index].artistList,
                               album: detail.songs![index].album,
                             ),
@@ -325,11 +325,24 @@ class _SetListDetailState extends State<LocalSetListDetail> {
       ),
       child: Row(
         children: [
-          MusicCover(
+          song.album.picUrl != null && song.album.picUrl.isNotEmpty ? MusicCover(
             imageUrl: '${song.album.picUrl}?param=100y100',
             width: 52,
             height: 52,
             radius: YMusicRadius.sm,
+          ) : Image.asset(
+            "/1.png",
+            width: 52,
+            height: 52,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) {
+              return Container(
+                width: 52,
+                height: 52,
+                color: Colors.white10,
+                child: const Icon(Icons.music_note, color: Colors.white54, size: 46),
+              );
+            },
           ),
           SizedBox(width: YMusicSpacing.md),
           Expanded(

@@ -62,7 +62,7 @@ class LocalSetListDetailProvider extends ChangeNotifier {
                             if (song.artistList.length > 1) {
                               Navigator.pop(sheetContext);
                               _showArtistPickerSheet(context, SetListDetailSongsModel(
-                                id: song.id,
+                                id: int.parse(song.id),
                                 name: song.name,
                                 artistList: song.artistList,
                                 album: AlbumOfSetListSong(name: '', id: -1, picUrl: ''),

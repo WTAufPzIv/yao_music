@@ -152,7 +152,7 @@ class SetListDetailModel {
 
 class LocalSetListDetailSongsModel {
   /// 歌曲i
-  final int id;
+  final String id;
   /// 歌名
   final String name;
   /// 平台

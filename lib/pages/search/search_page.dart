@@ -7,8 +7,10 @@ import 'package:yao_music/theme/app_space.dart';
 import 'package:yao_music/theme/app_text.dart';
 
 import '../../models/search.dart';
+import '../../models/set_list_detail.dart';
 import '../../models/song_detail.dart';
 import '../../providers/song_detail_provider.dart';
+import '../../providers/user/local_tab.dart';
 import '../../theme/app_color.dart';
 
 class SearchResult extends StatefulWidget {
@@ -54,6 +56,7 @@ class _SearchResultState extends State<SearchResult> {
   Widget build(BuildContext context) {
     final provider = context.watch<SearchProvider>();
     final playerProvider = context.read<SongDetailProvider>();
+    final localTabProvider = context.read<LocalTabProvider>();
     final list = provider.list;
     final bool loading = provider.loading == LoadState.loading;
     return Scaffold(
@@ -114,7 +117,7 @@ class _SearchResultState extends State<SearchResult> {
                               )
                             ], 0);
                           },
-                          child: _buildResultItem(item),
+                          child: _buildResultItem(item, provider, localTabProvider),
                         );
                       },
                     )
@@ -175,7 +178,7 @@ class _SearchResultState extends State<SearchResult> {
     );
   }
 
-  Widget _buildResultItem(SearchResultItem result) {
+  Widget _buildResultItem(SearchResultItem result, SearchProvider searchProvider, LocalTabProvider localTabProvider) {
     return Padding(
       padding: EdgeInsetsGeometry.symmetric(
         horizontal: YMusicSpacing.md
@@ -210,7 +213,22 @@ class _SearchResultState extends State<SearchResult> {
               color: YMusicColors.primary,
             ),
             onPressed: () {
-              /// provider.showAddToLocalSheet(context);
+              localTabProvider.addSongToLocalPlayList(LocalSetListDetailSongsModel(
+                id: result.id,
+                name: result.name,
+                platform: searchProvider.platform,
+                artistList: [
+                  ArtistOfSetListSong(
+                    id: -1,
+                    name: result.artistNames
+                  )
+                ],
+                album: AlbumOfSetListSong(
+                  id: -1,
+                  name: '',
+                  picUrl: ''
+                ),
+              ), context);
             },
           )
         ],
