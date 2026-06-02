@@ -9,6 +9,7 @@ import 'package:yao_music/theme/app_text.dart';
 import '../../models/search.dart';
 import '../../models/song_detail.dart';
 import '../../providers/song_detail_provider.dart';
+import '../../theme/app_color.dart';
 
 class SearchResult extends StatefulWidget {
   const SearchResult({super.key});
@@ -179,23 +180,38 @@ class _SearchResultState extends State<SearchResult> {
       padding: EdgeInsetsGeometry.symmetric(
         horizontal: YMusicSpacing.md
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Text(
-            result.name,
-            style: YMusicTextStyles.bodyLarge,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  result.name,
+                  style: YMusicTextStyles.bodyLarge,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(
+                  height: YMusicSpacing.xs,
+                ),
+                Text(
+                  result.artistNames,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: YMusicTextStyles.bodySmall,
+                )
+              ],
+            ),
           ),
-          SizedBox(
-            height: YMusicSpacing.xs,
-          ),
-          Text(
-            result.artistNames,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: YMusicTextStyles.bodySmall,
+          IconButton(
+            icon: const Icon(
+              Icons.more_vert,
+              color: YMusicColors.primary,
+            ),
+            onPressed: () {
+              /// provider.showAddToLocalSheet(context);
+            },
           )
         ],
       )
