@@ -224,11 +224,14 @@ class LocalSetListDetailModel {
   final int id;
   /// 歌单名称
   final String name;
+  /// 歌单名称
+  final String cover;
   /// 歌曲列表
   final List<LocalSetListDetailSongsModel> songs;
 
   LocalSetListDetailModel({
     required this.id,
+    required this.cover,
     required this.name,
     required this.songs
   });
@@ -237,6 +240,7 @@ class LocalSetListDetailModel {
     return {
       'id': id,
       'name': name,
+      'cover': cover,
       'songs': songs.map((e) => e.toJson()).toList(),
     };
   }
@@ -244,6 +248,7 @@ class LocalSetListDetailModel {
   factory LocalSetListDetailModel.fromJson(Map<String, dynamic> json) {
     return LocalSetListDetailModel(
       id: json['id'] ?? 0,
+      cover: json['cover'] ?? '',
       name: json['name'] ?? '',
       songs: (json['songs'] as List<dynamic>?)
           ?.map((e) => LocalSetListDetailSongsModel.fromJson(e))

@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,13 @@ class LocalSetListCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(YMusicRadius.md),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(YMusicRadius.md),
-                child: Image.asset(
+                child: playlist.cover.startsWith('http') ? CachedNetworkImage(
+                    imageUrl: playlist.cover,
+                    httpHeaders: {'user-agent': 'windows'},
+                    width: 180,
+                    height: 180,
+                    fit: BoxFit.cover
+                ) : Image.asset(
                   "/1.png",
                   width: 180,
                   height: 180,

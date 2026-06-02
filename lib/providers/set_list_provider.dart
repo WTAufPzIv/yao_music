@@ -538,7 +538,8 @@ class SetListProvider extends ChangeNotifier {
                           final randomId = DateTime.now().millisecondsSinceEpoch + Random().nextInt(99999);
                           final playlistItem = LocalSetListDetailModel(
                               id: randomId,
-                              name: '[本地]${detail.name}',
+                              name: '[本地123]${detail.name}',
+                              cover: 'https://picsum.photos/seed/$randomId/800/800',
                               songs: detail.songs.map((e){
                                 return LocalSetListDetailSongsModel(
                                   id: e.id,

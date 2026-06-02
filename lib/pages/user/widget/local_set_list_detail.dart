@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -81,7 +82,13 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                         fit: StackFit.expand,
                         children: [
                           /// 背景封面
-                          Image.asset(
+                          detail.cover.startsWith('http') ? CachedNetworkImage(
+                              imageUrl: detail.cover,
+                              httpHeaders: {'user-agent': 'windows'},
+                              width: 180,
+                              height: 180,
+                              fit: BoxFit.cover
+                          ) : Image.asset(
                             "/1.png",
                             width: 180,
                             height: 180,

@@ -80,6 +80,7 @@ class _LocalCreateCardState extends State<LocalCreateCard> {
     final randomId = DateTime.now().millisecondsSinceEpoch + Random().nextInt(99999);
     final playlistItem = LocalSetListDetailModel(
         id: randomId,
+        cover: 'https://picsum.photos/seed/$randomId/800/800',
         name: name.trim(),
         songs: []
     );
