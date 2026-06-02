@@ -134,7 +134,7 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                                                   SingMiniInfo(
                                                       id: e.id.toString(),
                                                       coverUrl: e.album.picUrl,
-                                                      platform: SearchPlatform.netease,
+                                                      platform: e.platform,
                                                       name: e.name,
                                                       artistName: e.artistNames,
                                                       albumName: e.album.name
@@ -217,7 +217,6 @@ class _SetListDetailState extends State<LocalSetListDetail> {
               SliverList.builder(
                 itemCount: detail.songs?.length,
                 itemBuilder: (context, index) {
-                  final song = detail.songs![index];
                   return Column(
                     children: [
                       GestureDetector(
@@ -228,7 +227,7 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                                       SingMiniInfo(
                                           id: e.id.toString(),
                                           coverUrl: e.album.picUrl,
-                                          platform: SearchPlatform.netease,
+                                          platform: e.platform,
                                           name: e.name,
                                           artistName: e.artistNames,
                                           albumName: e.album.name
@@ -237,9 +236,15 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                           );
                         },
                         child: _setListSongItem(
-                            song: detail.songs![index],
+                            song: LocalSetListDetailSongsModel(
+                              id: detail.songs![index].id,
+                              name: detail.songs![index].name,
+                              platform: SearchPlatform.netease,
+                              artistList: detail.songs![index].artistList,
+                              album: detail.songs![index].album,
+                            ),
                             index: index,
-                            openSongInfo: (SetListDetailSongsModel song) => provider.showSongInfoSheet(context, song)
+                            openSongInfo: (LocalSetListDetailSongsModel song) => provider.showSongInfoSheet(context, song)
                         ),
                       ),
                       if (index != detail.songs.length - 1)
@@ -301,9 +306,9 @@ class _SetListDetailState extends State<LocalSetListDetail> {
   }
 
   Widget _setListSongItem({
-    required SetListDetailSongsModel song,
+    required LocalSetListDetailSongsModel song,
     required int index,
-    required Function(SetListDetailSongsModel song) openSongInfo
+    required Function(LocalSetListDetailSongsModel song) openSongInfo
   }) {
     return Container(
       padding:
@@ -334,13 +339,25 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                 ),
                 const SizedBox(height: YMusicSpacing.xxs),
                 /// 歌手名称
-                Text(
-                    song.artistNames ?? '',
-                    maxLines: 1,
-                    overflow:
-                    TextOverflow.ellipsis,
-                    style: YMusicTextStyles.bodySmall
-                ),
+                Row(
+                  children: [
+                    Text(
+                        song.artistNames ?? '',
+                        maxLines: 1,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: YMusicTextStyles.bodySmall
+                    ),
+                    Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: YMusicSpacing.md)),
+                    Text(
+                        song.platform.name ?? '',
+                        maxLines: 1,
+                        overflow:
+                        TextOverflow.ellipsis,
+                        style: YMusicTextStyles.bodySmall
+                    ),
+                  ],
+                )
               ],
             ),
           ),

@@ -6,6 +6,7 @@ import 'package:yao_music/providers/home_provider.dart';
 import 'package:yao_music/providers/login_provider.dart';
 import 'package:yao_music/providers/song_detail_provider.dart';
 import 'package:yao_music/providers/song_handle/player_manager.dart';
+import 'package:yao_music/providers/user/local_tab.dart';
 import 'api/base/dio_http.dart';
 import 'app/app.dart';
 
@@ -24,6 +25,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => SongDetailProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => LocalTabProvider(),
         ),
       ],
       child: const MyApp(),

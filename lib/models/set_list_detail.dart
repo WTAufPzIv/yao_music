@@ -1,6 +1,7 @@
 import 'package:yao_music/models/base/album_base.dart';
 import 'package:yao_music/models/base/artist_base.dart';
 import 'package:yao_music/models/base/song_base.dart';
+import 'package:yao_music/models/search.dart';
 
 class ArtistOfSetListSong implements ArtistBaseModel {
   /// 歌手id
@@ -41,7 +42,7 @@ class AlbumOfSetListSong implements AlbumBaseModel {
   @override
   final String picUrl;
 
-  AlbumOfSetListSong({
+  const AlbumOfSetListSong({
     required this.name,
     required this.id,
     required this.picUrl
@@ -149,13 +150,82 @@ class SetListDetailModel {
   }
 }
 
+class LocalSetListDetailSongsModel {
+  /// 歌曲i
+  final int id;
+  /// 歌名
+  final String name;
+  /// 平台
+  final SearchPlatform platform;
+  /// 歌手信息
+  final List<ArtistOfSetListSong> artistList;
+  // 专辑信息
+  final AlbumOfSetListSong album;
+  String get artistNames {
+    return artistList
+        .map((e) => e.name)
+        .join(' / ');
+  }
+
+  const LocalSetListDetailSongsModel({
+    required this.id,
+    required this.name,
+    required this.platform,
+    this.artistList = const [],
+    this.album = const AlbumOfSetListSong(
+      id: -1,
+      name: '',
+      picUrl: '',
+    ),
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'platform': platform.name,
+      'artistList': artistList.map((e) => e.toJson()).toList(),
+      'album': album.toJson(),
+    };
+  }
+
+  factory LocalSetListDetailSongsModel.fromJson(Map<String, dynamic> json) {
+    return LocalSetListDetailSongsModel(
+      id: json['id'] ?? 0,
+      name: json['name'] ?? '',
+      platform: SearchPlatform.values.firstWhere(
+        (e) => e.name == json['platform'],
+        orElse: () => SearchPlatform.netease,
+      ),
+
+      artistList: json['artistList'] is List
+          ? (json['artistList'] as List)
+          .map((e) => ArtistOfSetListSong.fromJson(
+        e as Map<String, dynamic>,
+      ))
+          .toList()
+          : [],
+
+      album: json['album'] != null
+          ? AlbumOfSetListSong.fromJson(
+        json['album'] as Map<String, dynamic>,
+      )
+          : AlbumOfSetListSong(
+        id: -1,
+        name: '',
+        picUrl: '',
+      ),
+    );
+  }
+}
+
 class LocalSetListDetailModel {
   /// id
   final int id;
   /// 歌单名称
   final String name;
   /// 歌曲列表
-  final List<SetListDetailSongsModel> songs;
+  final List<LocalSetListDetailSongsModel> songs;
 
   LocalSetListDetailModel({
     required this.id,
@@ -176,7 +246,7 @@ class LocalSetListDetailModel {
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
       songs: (json['songs'] as List<dynamic>?)
-          ?.map((e) => SetListDetailSongsModel.fromJson(e))
+          ?.map((e) => LocalSetListDetailSongsModel.fromJson(e))
           .toList() ?? [],
     );
   }

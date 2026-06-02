@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:yao_music/components/mini_player.dart';
 
 import '../components/overlay.dart';
 

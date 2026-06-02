@@ -1,10 +1,14 @@
+import 'dart:math';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:provider/provider.dart';
 import 'package:yao_music/constants/load_state.dart';
+import 'package:yao_music/models/search.dart';
 import 'package:yao_music/pages/artist_detail/artist_detail.dart';
+import 'package:yao_music/providers/user/local_tab.dart';
 import 'package:yao_music/theme/app_text.dart';
 
 import '../models/set_list_detail.dart';
@@ -530,6 +534,22 @@ class SetListProvider extends ChangeNotifier {
                       InkWell(
                         borderRadius: BorderRadius.circular(12),
                         onTap: () async {
+                          final localTabProvider = context.read<LocalTabProvider>();
+                          final randomId = DateTime.now().millisecondsSinceEpoch + Random().nextInt(99999);
+                          final playlistItem = LocalSetListDetailModel(
+                              id: randomId,
+                              name: '[本地]${detail.name}',
+                              songs: detail.songs.map((e){
+                                return LocalSetListDetailSongsModel(
+                                  id: e.id,
+                                  name: e.name,
+                                  platform: SearchPlatform.netease,
+                                  artistList: e.artistList,
+                                  album: e.album,
+                                );
+                              }).toList()
+                          );
+                          localTabProvider.inertLocalPlayList(playlistItem);
                           Navigator.pop(sheetContext);
                         },
                         child: SizedBox(

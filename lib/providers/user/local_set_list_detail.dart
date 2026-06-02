@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:yao_music/models/search.dart';
 
 import '../../models/set_list_detail.dart';
 import '../../pages/album_detail/album_detail.dart';
@@ -12,8 +13,7 @@ import '../album_detail_provider.dart';
 import '../artist_detail_provider.dart';
 
 class LocalSetListDetailProvider extends ChangeNotifier {
-
-  Future<void> showSongInfoSheet (BuildContext context, SetListDetailSongsModel song) async {
+  Future<void> showSongInfoSheet (BuildContext context, LocalSetListDetailSongsModel song) async {
     showModalBottomSheet(
       context: context,
       backgroundColor: YMusicColors.background,
@@ -55,113 +55,120 @@ class LocalSetListDetailProvider extends ChangeNotifier {
                   ),
                   child: Column(
                     children: [
-                      InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          if (song.artistList.length > 1) {
-                            Navigator.pop(sheetContext);
-                            _showArtistPickerSheet(context, song);
-                          } else {
+                      if (song.platform == SearchPlatform.netease && song.artistList != null && song.artistList!.isNotEmpty)
+                        InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
+                            if (song.artistList.length > 1) {
+                              Navigator.pop(sheetContext);
+                              _showArtistPickerSheet(context, SetListDetailSongsModel(
+                                id: song.id,
+                                name: song.name,
+                                artistList: song.artistList,
+                                album: AlbumOfSetListSong(name: '', id: -1, picUrl: ''),
+                              ));
+                            } else {
+                              Navigator.pop(sheetContext);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  settings: const RouteSettings(
+                                    name: "/ArtistDetail",
+                                  ),
+                                  builder: (_) => ChangeNotifierProvider(
+                                    create: (_) => ArtistDetailProvider(),
+                                    child: ArtistDetail(artistId: song.artistList[0].id),
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: EdgeInsetsGeometry.symmetric(
+                                  vertical: YMusicSpacing.lg,
+                                  horizontal: YMusicSpacing.sm,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                        CupertinoIcons.music_mic,
+                                        color: YMusicColors.primary,
+                                        size: 25
+                                    ),
+                                    SizedBox(
+                                      width: YMusicSpacing.md,
+                                    ),
+                                    Text(
+                                        '歌手：${song.artistNames}',
+                                        style: YMusicTextStyles.body,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis
+                                    )
+                                  ],
+                                ),
+                              )
+                          ),
+                        ),
+                        const Divider(
+                          height: 1,
+                          indent: 0,
+                          endIndent: 0,
+                          color: Colors.white12,
+                        ),
+                      if (song.platform == SearchPlatform.netease && song.album?.id != null && song.album!.id > 0)
+                        InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () {
                             Navigator.pop(sheetContext);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 settings: const RouteSettings(
-                                  name: "/ArtistDetail",
+                                  name: "/AlbumDetail",
                                 ),
                                 builder: (_) => ChangeNotifierProvider(
-                                  create: (_) => ArtistDetailProvider(),
-                                  child: ArtistDetail(artistId: song.artistList[0].id),
+                                  create: (_) => AlbumDetailProvider(),
+                                  child: AlbumDetail(albumId: song.album.id),
                                 ),
                               ),
                             );
-                          }
-                        },
-                        child: SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: EdgeInsetsGeometry.symmetric(
-                                vertical: YMusicSpacing.lg,
-                                horizontal: YMusicSpacing.sm,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                      CupertinoIcons.music_mic,
-                                      color: YMusicColors.primary,
-                                      size: 25
-                                  ),
-                                  SizedBox(
-                                    width: YMusicSpacing.md,
-                                  ),
-                                  Text(
-                                      '歌手：${song.artistNames}',
-                                      style: YMusicTextStyles.body,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis
-                                  )
-                                ],
-                              ),
-                            )
+                          },
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Padding(
+                                padding: EdgeInsetsGeometry.symmetric(
+                                  horizontal: YMusicSpacing.sm,
+                                  vertical: YMusicSpacing.lg,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                        CupertinoIcons.square_stack_3d_down_right,
+                                        color: YMusicColors.primary,
+                                        size: 25
+                                    ),
+                                    SizedBox(
+                                      width: YMusicSpacing.md,
+                                    ),
+                                    Text(
+                                        '专辑：${song.album.name}',
+                                        style: YMusicTextStyles.body,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis
+                                    )
+                                  ],
+                                ),
+                              )
+                          ),
                         ),
-                      ),
-                      const Divider(
-                        height: 1,
-                        indent: 0,
-                        endIndent: 0,
-                        color: Colors.white12,
-                      ),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              settings: const RouteSettings(
-                                name: "/AlbumDetail",
-                              ),
-                              builder: (_) => ChangeNotifierProvider(
-                                create: (_) => AlbumDetailProvider(),
-                                child: AlbumDetail(albumId: song.album.id),
-                              ),
-                            ),
-                          );
-                        },
-                        child: SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: EdgeInsetsGeometry.symmetric(
-                                horizontal: YMusicSpacing.sm,
-                                vertical: YMusicSpacing.lg,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                      CupertinoIcons.square_stack_3d_down_right,
-                                      color: YMusicColors.primary,
-                                      size: 25
-                                  ),
-                                  SizedBox(
-                                    width: YMusicSpacing.md,
-                                  ),
-                                  Text(
-                                      '专辑：${song.album.name}',
-                                      style: YMusicTextStyles.body,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis
-                                  )
-                                ],
-                              ),
-                            )
+                        const Divider(
+                          height: 1,
+                          indent: 0,
+                          endIndent: 0,
+                          color: Colors.white12,
                         ),
-                      ),
-                      const Divider(
-                        height: 1,
-                        indent: 0,
-                        endIndent: 0,
-                        color: Colors.white12,
-                      ),
                       SizedBox(
                           width: double.infinity,
                           child: Padding(
@@ -197,7 +204,6 @@ class LocalSetListDetailProvider extends ChangeNotifier {
       },
     );
   }
-
   Future<void> _showArtistPickerSheet(BuildContext context, SetListDetailSongsModel song) async {
     showModalBottomSheet(
       context: context,

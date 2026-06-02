@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../models/set_list_detail.dart';
 import '../../../providers/user/local_set_list_detail.dart';
+import '../../../providers/user/local_tab.dart';
 import '../../../theme/app_color.dart';
 import '../../../theme/app_space.dart';
 import '../../../theme/app_text.dart';
@@ -20,134 +21,17 @@ class LocalTab extends StatefulWidget {
 }
 
 class _LocalTabState extends State<LocalTab> {
-  bool _localLoading = true;
-  List<LocalSetListDetailModel> _localPlaylists = [];
-
   @override
   void initState() {
     super.initState();
-    _loadLocalPlaylists();
-  }
-
-  Future<void> _loadLocalPlaylists() async {
-    final list = await LocalPlaylistStorage.load();
-    if (!mounted) return;
-    setState(() {
-      _localPlaylists = list;
-      _localLoading = false;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LocalTabProvider>().loadLocalPlaylists();
     });
-  }
-
-  Future<void> _saveLocalPlaylists() async {
-    await LocalPlaylistStorage.save(_localPlaylists);
-  }
-
-  Future<void> inertLocalPlayList(LocalSetListDetailModel item) async {
-    setState(() {
-      _localPlaylists.insert(0, item);
-    });
-    await _saveLocalPlaylists();
-  }
-
-  Future<void> removeFormLocalPlayList(int index) async {
-    if (index < 0 || index >= _localPlaylists.length) {
-      return;
-    }
-    setState(() {
-      _localPlaylists.removeAt(index);
-    });
-    await _saveLocalPlaylists();
-  }
-
-  Future<void> openDeleteSheet (int index) async {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: YMusicColors.background,
-      isScrollControlled: true,
-      builder: (sheetContext) {
-        return SafeArea(
-          child: Container(
-            constraints: BoxConstraints(
-              maxHeight: 500,
-            ),
-            padding: EdgeInsetsGeometry.only(bottom: 35),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1C1C1E).withOpacity(0.94),
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(28),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                /// 顶部拖拽条
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: YMusicSpacing.md,
-                  ),
-                  child: Container(
-                    width: 36,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.white24,
-                      borderRadius: BorderRadius.circular(999),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: YMusicSpacing.md,
-                    vertical: YMusicSpacing.md,
-                  ),
-                  child: Column(
-                    children: [
-                      InkWell(
-                        borderRadius: BorderRadius.circular(12),
-                        onTap: () async {
-                          Navigator.pop(sheetContext);
-                          return removeFormLocalPlayList(index);
-                        },
-                        child: SizedBox(
-                            width: double.infinity,
-                            child: Padding(
-                              padding: EdgeInsetsGeometry.symmetric(
-                                vertical: YMusicSpacing.lg,
-                                horizontal: YMusicSpacing.sm,
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                      CupertinoIcons.delete,
-                                      color: YMusicColors.primary,
-                                      size: 25
-                                  ),
-                                  SizedBox(
-                                    width: YMusicSpacing.md,
-                                  ),
-                                  Text(
-                                      '删除歌单',
-                                      style: YMusicTextStyles.body,
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis
-                                  )
-                                ],
-                              ),
-                            )
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<LocalTabProvider>();
     return CustomScrollView(
       physics: const BouncingScrollPhysics(),
       slivers: [
@@ -162,15 +46,15 @@ class _LocalTabState extends State<LocalTab> {
               YMusicSpacing.md,
               YMusicSpacing.md,
             ),
-            child: LocalCreateCard(inertLocalPlayList: inertLocalPlayList),
+            child: LocalCreateCard(inertLocalPlayList: provider.inertLocalPlayList),
           ),
         ),
-        if (_localLoading)
+        if (provider.localLoading)
           const SliverFillRemaining(
             hasScrollBody: false,
             child: Center(child: CupertinoActivityIndicator()),
           )
-        else if (_localPlaylists.isEmpty)
+        else if (provider.localPlaylists.isEmpty)
           SliverFillRemaining(
             hasScrollBody: false,
             child: Center(
@@ -198,7 +82,7 @@ class _LocalTabState extends State<LocalTab> {
             sliver: SliverGrid(
               delegate: SliverChildBuilderDelegate((context, index) {
                   return LocalSetListCard(
-                    playlist: _localPlaylists[index],
+                    playlist: provider.localPlaylists[index],
                     onTap: () {
                       Navigator.push(
                         context,
@@ -207,18 +91,18 @@ class _LocalTabState extends State<LocalTab> {
                           builder: (_) => ChangeNotifierProvider(
                             create: (_) => LocalSetListDetailProvider(),
                             child: LocalSetListDetail(
-                                detail: _localPlaylists[index]
+                                detail: provider.localPlaylists[index]
                             ),
                           ),
                         ),
                       );
                     },
                     onLongPress: () {
-                      openDeleteSheet(index);
+                      provider.openDeleteSheet(index, context);
                     },
                   );
                 },
-                childCount: _localPlaylists.length,
+                childCount: provider.localPlaylists.length,
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,

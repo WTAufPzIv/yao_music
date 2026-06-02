@@ -12,39 +12,24 @@ class MusicAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
       PlaybackState(
         controls: [
           MediaControl.skipToPrevious,
-
           state.playing
               ? MediaControl.pause
               : MediaControl.play,
-
           MediaControl.skipToNext,
         ],
-
         systemActions: const {
           MediaAction.seek,
         },
-
         androidCompactActionIndices: const [
           0,
           1,
           2,
         ],
-
-        processingState:
-        _mapProcessingState(
-          state.processingState,
-        ),
-
+        processingState: _mapProcessingState(state.processingState),
         playing: state.playing,
-
-        updatePosition:
-        player.position,
-
-        bufferedPosition:
-        player.bufferedPosition,
-
-        speed:
-        player.speed,
+        updatePosition: player.position,
+        bufferedPosition: player.bufferedPosition,
+        speed: player.speed,
       ),
     );
   }

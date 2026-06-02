@@ -31,7 +31,8 @@ class MiniPlayerOverlay {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
-                child: MiniPlayer()
+                child: const MiniPlayer()
+                /// child: Text('')
               ),
             ),
           ),
