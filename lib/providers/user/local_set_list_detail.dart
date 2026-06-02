@@ -2,16 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../models/set_list_detail.dart';
-import '../pages/album_detail/album_detail.dart';
-import '../pages/artist_detail/artist_detail.dart';
-import '../theme/app_color.dart';
-import '../theme/app_space.dart';
-import '../theme/app_text.dart';
-import 'album_detail_provider.dart';
-import 'artist_detail_provider.dart';
+import '../../models/set_list_detail.dart';
+import '../../pages/album_detail/album_detail.dart';
+import '../../pages/artist_detail/artist_detail.dart';
+import '../../theme/app_color.dart';
+import '../../theme/app_space.dart';
+import '../../theme/app_text.dart';
+import '../album_detail_provider.dart';
+import '../artist_detail_provider.dart';
 
 class LocalSetListDetailProvider extends ChangeNotifier {
+
   Future<void> showSongInfoSheet (BuildContext context, SetListDetailSongsModel song) async {
     showModalBottomSheet(
       context: context,

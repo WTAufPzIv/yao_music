@@ -6,14 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:yao_music/theme/app_color.dart';
 import 'package:yao_music/theme/app_text.dart';
 
-import '../../components/music_cover.dart';
-import '../../models/search.dart';
-import '../../models/set_list_detail.dart';
-import '../../models/song_detail.dart';
-import '../../providers/local_set_list_detail.dart';
-import '../../providers/song_detail_provider.dart';
-import '../../theme/app_radius.dart';
-import '../../theme/app_space.dart';
+import '../../../components/music_cover.dart';
+import '../../../models/search.dart';
+import '../../../models/set_list_detail.dart';
+import '../../../models/song_detail.dart';
+import '../../../providers/user/local_set_list_detail.dart';
+import '../../../providers/song_detail_provider.dart';
+import '../../../theme/app_radius.dart';
+import '../../../theme/app_space.dart';
 
 class LocalSetListDetail extends StatefulWidget {
   final LocalSetListDetailModel detail;

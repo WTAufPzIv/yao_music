@@ -1,15 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:yao_music/pages/home/home_page.dart';
-import '../../components/mini_player.dart';
 import '../../components/overlay.dart';
 import '../../theme/app_color.dart';
-import '../home/home_page_navigator.dart';
-import '../home/home_wrapper.dart';
-import '../search/search_page.dart';
-import '../search/search_page_navigator.dart';
 import '../search/search_wrapper.dart';
 import '../user/user_page.dart';
-import '../user/user_page_navigator.dart';
 import 'main_page.dart';
 
 class MainPageState extends State<MainPage> {
