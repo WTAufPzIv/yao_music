@@ -5,6 +5,7 @@ import 'package:just_audio/just_audio.dart';
 class PlayerTime extends StatelessWidget {
 
   final AudioPlayer player;
+  static const Duration _positionUpdateInterval = Duration(seconds: 1);
 
   const PlayerTime({
     super.key,
@@ -38,7 +39,10 @@ class PlayerTime extends StatelessWidget {
                 Duration.zero;
 
         return StreamBuilder<Duration>(
-          stream: player.positionStream,
+          stream: player.createPositionStream(
+            minPeriod: _positionUpdateInterval,
+            maxPeriod: _positionUpdateInterval,
+          ),
           builder: (_, positionSnapshot) {
 
             final position =

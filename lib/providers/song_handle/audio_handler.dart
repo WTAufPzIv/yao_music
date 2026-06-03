@@ -36,12 +36,6 @@ class MusicAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
 
   MusicAudioHandler(this.player) {
     player.playerStateStream.listen(_broadcastState);
-
-    player.positionStream.listen((_) {
-      _broadcastState(
-        player.playerState,
-      );
-    });
   }
 
   AudioProcessingState _mapProcessingState(ProcessingState state) {
@@ -70,8 +64,10 @@ class MusicAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler 
   @override
   Future<void> seek(
       Duration position,
-      ) =>
-      player.seek(position);
+      ) async {
+    await player.seek(position);
+    _broadcastState(player.playerState);
+  }
 
   @override
   Future<void> skipToNext() async {

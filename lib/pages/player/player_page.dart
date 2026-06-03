@@ -334,14 +334,14 @@ class _PlayerPageState extends State<PlayerPage> with SingleTickerProviderStateM
           ),
           /// 唱片中心孔
           /// 中心孔
-          Container(
+          /*Container(
             width: 20,
             height: 20,
             decoration: const BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.black,
             ),
-          )
+          )*/
         ],
       )
     );

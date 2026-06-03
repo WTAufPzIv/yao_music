@@ -6,6 +6,8 @@ import 'package:yao_music/theme/app_color.dart';
 class PlayerSlider extends StatelessWidget {
 
   final AudioPlayer player;
+  static const Duration _positionMinUpdateInterval = Duration(milliseconds: 300);
+  static const Duration _positionMaxUpdateInterval = Duration(milliseconds: 500);
 
   const PlayerSlider({
     super.key,
@@ -21,7 +23,10 @@ class PlayerSlider extends StatelessWidget {
             durationSnapshot.data ??
                 Duration.zero;
         return StreamBuilder<Duration>(
-          stream: player.positionStream,
+          stream: player.createPositionStream(
+            minPeriod: _positionMinUpdateInterval,
+            maxPeriod: _positionMaxUpdateInterval,
+          ),
           builder: (_, positionSnapshot) {
             final position =
                 positionSnapshot.data ??
