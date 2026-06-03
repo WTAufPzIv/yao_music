@@ -161,6 +161,8 @@ class LocalSetListDetailSongsModel {
   final List<ArtistOfSetListSong> artistList;
   // 专辑信息
   final AlbumOfSetListSong album;
+  /// 专辑图片picId
+  final String picId;
   String get artistNames {
     return artistList
         .map((e) => e.name)
@@ -171,6 +173,7 @@ class LocalSetListDetailSongsModel {
     required this.id,
     required this.name,
     required this.platform,
+    required this.picId,
     this.artistList = const [],
     this.album = const AlbumOfSetListSong(
       id: -1,
@@ -184,6 +187,7 @@ class LocalSetListDetailSongsModel {
       'id': id,
       'name': name,
       'platform': platform.name,
+      'picId': picId,
       'artistList': artistList.map((e) => e.toJson()).toList(),
       'album': album.toJson(),
     };
@@ -193,11 +197,11 @@ class LocalSetListDetailSongsModel {
     return LocalSetListDetailSongsModel(
       id: json['id'] ?? 0,
       name: json['name'] ?? '',
+      picId: json['picId'],
       platform: SearchPlatform.values.firstWhere(
         (e) => e.name == json['platform'],
         orElse: () => SearchPlatform.netease,
       ),
-
       artistList: json['artistList'] is List
           ? (json['artistList'] as List)
           .map((e) => ArtistOfSetListSong.fromJson(
@@ -205,7 +209,6 @@ class LocalSetListDetailSongsModel {
       ))
           .toList()
           : [],
-
       album: json['album'] != null
           ? AlbumOfSetListSong.fromJson(
         json['album'] as Map<String, dynamic>,

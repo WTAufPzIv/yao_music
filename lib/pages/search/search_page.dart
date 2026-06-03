@@ -213,9 +213,11 @@ class _SearchResultState extends State<SearchResult> {
               color: YMusicColors.primary,
             ),
             onPressed: () {
+              print(result.picId);
               localTabProvider.addSongToLocalPlayList(LocalSetListDetailSongsModel(
                 id: result.id,
                 name: result.name,
+                picId: result.picId,
                 platform: searchProvider.platform,
                 artistList: [
                   ArtistOfSetListSong(
