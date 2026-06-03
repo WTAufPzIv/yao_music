@@ -154,6 +154,7 @@ class _SetListDetailState extends State<SetListDetail> {
                                                     id: e.id.toString(),
                                                     coverUrl: e.album.picUrl,
                                                     platform: SearchPlatform.netease,
+                                                    lyricId: e.id.toString(),
                                                     name: e.name,
                                                     artistName: e.artistNames,
                                                     albumName: e.album.name
@@ -255,6 +256,7 @@ class _SetListDetailState extends State<SetListDetail> {
                                     (e) =>
                                     SingMiniInfo(
                                         id: e.id.toString(),
+                                        lyricId: e.id.toString(),
                                         coverUrl: e.album.picUrl,
                                         platform: SearchPlatform.netease,
                                         name: e.name,

@@ -547,7 +547,8 @@ class SetListProvider extends ChangeNotifier {
                                   platform: SearchPlatform.netease,
                                   artistList: e.artistList,
                                   album: e.album,
-                                  picId: ''
+                                  picId: '',
+                                  lyricId: e.id.toString(),
                                 );
                               }).toList()
                           );

@@ -180,6 +180,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
                                                   (e) =>
                                                   SingMiniInfo(
                                                       id: e.id.toString(),
+                                                      lyricId: e.id.toString(),
                                                       coverUrl: e.album.picUrl,
                                                       platform: SearchPlatform.netease,
                                                       name: e.name,
@@ -273,6 +274,7 @@ class _AlbumDetailState extends State<AlbumDetail> {
                                       (e) =>
                                       SingMiniInfo(
                                           id: e.id.toString(),
+                                          lyricId: e.id.toString(),
                                           coverUrl: e.album.picUrl,
                                           platform: SearchPlatform.netease,
                                           name: e.name,

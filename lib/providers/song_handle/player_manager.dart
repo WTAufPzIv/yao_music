@@ -6,6 +6,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../models/lyric_line.dart';
 import '../../models/song_detail.dart';
 import 'audio_handler.dart';
 
@@ -117,7 +118,8 @@ class PlayerManager {
   Future<void> playSong({
     required SingMiniInfo song,
     required String url,
-    required String cover
+    required String cover,
+    required List<LyricLineModel> lyrics
   }) async {
     await player.setUrl(url);
     _updateMediaItem(song, cover);
@@ -127,7 +129,7 @@ class PlayerManager {
   Future<void> prePlaySong({
     required SingMiniInfo song,
     required String url,
-    required String cover
+    required String cover,
   }) async {
     await player.setUrl(url);
     _updateMediaItem(song, cover);

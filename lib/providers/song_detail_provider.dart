@@ -72,20 +72,22 @@ class SongDetailProvider extends ChangeNotifier {
   }
 
   Future<void> fetchLyricText() async {
+    print(currentBaseInfo.toJson());
     if (currentBaseInfo.lyricId != null && currentBaseInfo.lyricId!.isNotEmpty) {
       try {
-        final result = await SongDetailService.getSongAlbumCover(SongAlbumDTO(
-            picId: currentBaseInfo.picId!,
+        final result = await SongDetailService.getSongAlbumLyric(SongLyricDTO(
+            lyricId: currentBaseInfo.lyricId!,
             platform: currentBaseInfo.platform
         ));
         currentLyricText = result;
         currentLyricPrase = parseLrc(currentLyricText);
         return;
       } catch (e) {
-        currentCoverImage = '';
+        print(e);
+        currentLyricPrase = [];
       }
     }
-    currentCoverImage = '';
+    currentLyricPrase = [];
   }
 
   Future<void> fetchAlbumCover() async {
@@ -120,6 +122,7 @@ class SongDetailProvider extends ChangeNotifier {
     try {
       loadState = LoadState.loading;
       notifyListeners();
+      await fetchLyricText();
       await fetchAlbumCover();
       final result = await SongDetailService.getSongDetail(SongDTO(
           id: currentBaseInfo.id,
@@ -148,7 +151,6 @@ class SongDetailProvider extends ChangeNotifier {
             lyrics: currentLyricPrase
         );
       }
-
     } catch (e) {
       loadState = LoadState.error;
       rethrow;

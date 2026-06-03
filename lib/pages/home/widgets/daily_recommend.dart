@@ -103,6 +103,7 @@ class _DailyRecommendState extends State<DailyRecommend> with AutomaticKeepAlive
                                           SingMiniInfo(
                                               id: e.id.toString(),
                                               coverUrl: e.album.picUrl,
+                                              lyricId: e.id.toString(),
                                               platform: SearchPlatform.netease,
                                               name: e.name,
                                               artistName: e.artistNames,

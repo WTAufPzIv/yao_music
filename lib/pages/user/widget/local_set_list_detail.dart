@@ -140,6 +140,7 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                                                   (e) =>
                                                   SingMiniInfo(
                                                       id: e.id.toString(),
+                                                      lyricId: e.id.toString(),
                                                       coverUrl: e.album.picUrl,
                                                       platform: e.platform,
                                                       name: e.name,
@@ -233,6 +234,7 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                                       (e) =>
                                       SingMiniInfo(
                                           id: e.id.toString(),
+                                          lyricId: e.id.toString(),
                                           picId: e.picId,
                                           coverUrl: e.album.picUrl,
                                           platform: e.platform,
@@ -250,7 +252,8 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                               platform: detail.songs![index].platform,
                               artistList: detail.songs![index].artistList,
                               album: detail.songs![index].album,
-                              picId: detail.songs![index].picId
+                              picId: detail.songs![index].picId,
+                              lyricId: detail.songs![index].lyricId
                             ),
                             index: index,
                             openSongInfo: (LocalSetListDetailSongsModel song) => provider.showSongInfoSheet(context, song)

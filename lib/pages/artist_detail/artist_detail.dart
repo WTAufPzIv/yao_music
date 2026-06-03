@@ -291,6 +291,7 @@ class _ArtistDetailState extends State<ArtistDetail> {
                                                   (e) =>
                                                   SingMiniInfo(
                                                       id: e.id.toString(),
+                                                      lyricId: e.id.toString(),
                                                       coverUrl: e.album.picUrl,
                                                       platform: SearchPlatform.netease,
                                                       name: e.name,

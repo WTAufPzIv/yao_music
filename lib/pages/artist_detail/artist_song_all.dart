@@ -79,6 +79,7 @@ class _ArtistSongAllState extends State<ArtistSongAll> {
                                 (e) =>
                                 SingMiniInfo(
                                     id: e.id.toString(),
+                                    lyricId: e.id.toString(),
                                     coverUrl: e.album.picUrl,
                                     platform: SearchPlatform.netease,
                                     name: e.name,

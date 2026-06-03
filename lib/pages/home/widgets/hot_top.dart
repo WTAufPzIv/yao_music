@@ -104,6 +104,7 @@ class _HotTopState extends State<HotTop> with AutomaticKeepAliveClientMixin {
                                               (e) =>
                                               SingMiniInfo(
                                                   id: e.id.toString(),
+                                                  lyricId: e.id.toString(),
                                                   coverUrl: e.album.picUrl,
                                                   platform: SearchPlatform.netease,
                                                   name: e.name,
