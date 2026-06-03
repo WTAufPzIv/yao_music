@@ -8,6 +8,7 @@ class SingMiniInfo {
   final String albumName;
   final String? coverUrl;
   final String? picId;
+  final String? lyricId;
 
   const SingMiniInfo({
     required this.id,
@@ -16,7 +17,8 @@ class SingMiniInfo {
     required this.artistName,
     required this.albumName,
     this.coverUrl,
-    this.picId
+    this.picId,
+    this.lyricId
   });
 
   Map<String, dynamic> toJson() => {
@@ -24,6 +26,7 @@ class SingMiniInfo {
     'platform': platform.name,
     'name': name,
     'picId': picId,
+    'lyricId': lyricId,
     'artistName': artistName,
     'albumName': albumName,
     'coverUrl': coverUrl,
@@ -41,6 +44,7 @@ class SingMiniInfo {
       albumName: json['albumName'] ?? '',
       coverUrl: json['coverUrl'] ?? '',
       picId: json['picId'] ?? '',
+      lyricId: json['lyricId'],
     );
     return temp;
   }
@@ -91,5 +95,15 @@ class SongAlbumDTO  {
   SongAlbumDTO({
     required this.platform,
     required this.picId,
+  });
+}
+
+class SongLyricDTO  {
+  final SearchPlatform platform;
+  final String lyricId;
+
+  SongLyricDTO({
+    required this.platform,
+    required this.lyricId,
   });
 }

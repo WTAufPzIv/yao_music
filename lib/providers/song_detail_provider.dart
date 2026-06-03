@@ -5,6 +5,7 @@ import 'package:yao_music/constants/load_state.dart';
 import 'package:yao_music/models/search.dart';
 import 'package:yao_music/providers/song_handle/player_manager.dart';
 
+import '../models/lyric_line.dart';
 import '../models/song_detail.dart';
 import '../services/song_detail_service.dart';
 
@@ -19,12 +20,13 @@ class SongDetailProvider extends ChangeNotifier {
   );
   String currentUrl = '';
   String currentCoverImage = '';
+  String currentLyricText = '';
+  List<LyricLineModel> currentLyricPrase = [];
   bool visible = true;
   LoadState loadState = LoadState.success;
   AudioPlayer get player => _manager.player;
   PlayMode get playMode => _manager.playMode;
   bool get playing => _manager.playing;
-
 
   SongDetailProvider() {
     _manager.onPlayRequest = playSong;
@@ -37,6 +39,53 @@ class SongDetailProvider extends ChangeNotifier {
     } else {
       await _manager.resume();
     }
+  }
+
+  List<LyricLineModel> parseLrc(String lrc) {
+    final result = <LyricLineModel>[];
+    final reg = RegExp(
+      r'\[(\d+):(\d+)\.(\d+)\](.*)',
+    );
+    for (final line in lrc.split('\n')) {
+      final match = reg.firstMatch(line);
+
+      if (match == null) continue;
+
+      final minute = int.parse(match.group(1)!);
+      final second = int.parse(match.group(2)!);
+      final milli =
+      int.parse(match.group(3)!.padRight(3, '0'));
+
+      result.add(
+        LyricLineModel(
+          time: Duration(
+            minutes: minute,
+            seconds: second,
+            milliseconds: milli,
+          ),
+          text: match.group(4)!.trim(),
+        ),
+      );
+    }
+
+    return result;
+  }
+
+  Future<void> fetchLyricText() async {
+    if (currentBaseInfo.lyricId != null && currentBaseInfo.lyricId!.isNotEmpty) {
+      try {
+        final result = await SongDetailService.getSongAlbumCover(SongAlbumDTO(
+            picId: currentBaseInfo.picId!,
+            platform: currentBaseInfo.platform
+        ));
+        currentLyricText = result;
+        currentLyricPrase = parseLrc(currentLyricText);
+        return;
+      } catch (e) {
+        currentCoverImage = '';
+      }
+    }
+    currentCoverImage = '';
   }
 
   Future<void> fetchAlbumCover() async {
@@ -95,7 +144,8 @@ class SongDetailProvider extends ChangeNotifier {
         await _manager.playSong(
             song: mini,
             url: currentUrl,
-            cover: currentCoverImage
+            cover: currentCoverImage,
+            lyrics: currentLyricPrase
         );
       }
 

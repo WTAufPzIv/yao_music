@@ -17,4 +17,10 @@ class SongApi {
     print(results.data.runtimeType);
     return results.data['url'];
   }
+  /// 获取歌词
+  static Future<String> fetchSongLyric(SongLyricDTO params) async {
+    final results = await dio.get('$gdMusicUrl?types=lyric&source=${params.platform.name}&id=${params.lyricId}');
+    print(results.data.runtimeType);
+    return results.data['lyric'];
+  }
 }
