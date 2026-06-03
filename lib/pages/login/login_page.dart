@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
   }
 
   @override
@@ -228,7 +228,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                       fontSize: 14,
                                     ),
                                     tabs: const [
-                                      Tab(
+                                     /* Tab(
                                         child: SizedBox.expand(
                                           child: Center(
                                             child: Text('验证码登录'),
@@ -241,7 +241,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                             child: Text('密码登录'),
                                           ),
                                         ),
-                                      ),
+                                      ),*/
                                       Tab(
                                         child: SizedBox.expand(
                                           child: Center(
@@ -258,8 +258,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                   child: TabBarView(
                                     controller: _tabController,
                                     children: [
-                                      _buildCaptchaLogin(provider),
-                                      _buildPasswordLogin(provider),
+/*                                      _buildCaptchaLogin(provider),
+                                      _buildPasswordLogin(provider),*/
                                       _buildCookieLogin(provider, context),
                                     ],
                                   ),
