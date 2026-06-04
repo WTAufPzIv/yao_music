@@ -71,8 +71,8 @@ class _HeaderInfoState extends State<HeaderInfo> {
                       unselectedLabelColor: Colors.white70,
                       indicatorColor: YMusicColors.primary,
                       tabs: [
-                        Tab(text: '网易云歌单'),
                         Tab(text: '本地歌单'),
+                        Tab(text: '网易云歌单'),
                       ],
                     ),
                     flexibleSpace: FlexibleSpaceBar(
@@ -141,14 +141,14 @@ class _HeaderInfoState extends State<HeaderInfo> {
               children: [
                 Builder(
                   builder: (context) {
-                    return RemoteTab(refreshAuthStatus);
+                    return LocalTab();
                   },
                 ),
                 Builder(
                   builder: (context) {
-                    return LocalTab();
+                    return RemoteTab(refreshAuthStatus);
                   },
-                ),
+                )
               ],
             )
         )
