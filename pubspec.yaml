@@ -73,6 +73,17 @@ flutter:
   assets:
     - lib/assets/image/banner.jpg
     - lib/assets/image/album_default.png
+    - lib/assets/image/startup.png
+
+flutter_native_splash:
+  color: "#0B0B0F"
+  image: lib/assets/image/icon.png
+  android: true
+  ios: true
+  android_12:
+    color: "#0B0B0F"
+    image: lib/assets/image/icon.png
+  fullscreen: true
 
 flutter_launcher_icons:
   android: true

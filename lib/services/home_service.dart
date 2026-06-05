@@ -47,4 +47,9 @@ class HomeService {
     final result = await HomeApi.fetchRankList();
     return result.take(4).toList();
   }
+  /// 获取完整榜单列表
+  static Future<List<RankListModel>> getRankListFull() async  {
+    final result = await HomeApi.fetchRankList();
+    return result.toList();
+  }
 }

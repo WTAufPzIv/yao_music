@@ -358,29 +358,29 @@ class _SetListDetailState extends State<LocalSetListDetail> {
                 Text(
                     song.name ?? '',
                     maxLines: 1,
-                    overflow:
-                    TextOverflow.ellipsis,
+                    overflow: TextOverflow.ellipsis,
                     style: YMusicTextStyles.bodyLarge
                 ),
                 const SizedBox(height: YMusicSpacing.xxs),
                 /// 歌手名称
                 Row(
                   children: [
-                    Text(
-                        song.artistNames ?? '',
-                        maxLines: 1,
-                        overflow:
-                        TextOverflow.ellipsis,
-                        style: YMusicTextStyles.bodySmall
+                    Expanded(
+                      child: Text(
+                          song.artistNames ?? '',
+                          maxLines: 1,
+                          overflow:
+                          TextOverflow.ellipsis,
+                          style: YMusicTextStyles.bodySmall
+                      ),
                     ),
                     Padding(padding: EdgeInsetsGeometry.symmetric(horizontal: YMusicSpacing.md)),
                     Text(
                         song.platform.name ?? '',
                         maxLines: 1,
-                        overflow:
-                        TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis,
                         style: YMusicTextStyles.bodySmall
-                    ),
+                    )
                   ],
                 )
               ],

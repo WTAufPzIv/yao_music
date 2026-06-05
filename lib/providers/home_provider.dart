@@ -55,6 +55,8 @@ class HomeProvider extends ChangeNotifier {
   LoadState loadHotTopState = LoadState.loading;
   /// 榜单数据
   List<RankListModel> rank = [];
+  /// 所有榜单数据
+  List<RankListModel> rankFull = [];
   /// 榜单数据加载状态
   LoadState loadRankListState = LoadState.loading;
 
@@ -237,6 +239,28 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
       final result = await HomeService.getRankList();
       rank = result;
+      loadRankListState = LoadState.success;
+    } catch (e) {
+      loadRankListState = LoadState.error;
+    }
+    notifyListeners();
+  }
+  /// 加载所有榜单
+  Future<void> loadRankListFull() async {
+    List<RankListModel> place = List.generate(
+      10,
+          (_) => RankListModel(
+        id: random.nextInt(100),
+        name: '排行榜',
+        coverImgUrl: 'lib/assets/image/banner.jpg',
+      ),
+    );
+    rankFull = place;
+    try {
+      loadRankListState = LoadState.loading;
+      notifyListeners();
+      final result = await HomeService.getRankListFull();
+      rankFull = result;
       loadRankListState = LoadState.success;
     } catch (e) {
       loadRankListState = LoadState.error;
@@ -429,10 +453,7 @@ class HomeProvider extends ChangeNotifier {
     );
   }
 
-  Future<void> _showArtistPickerSheet(
-      BuildContext context,
-      SongBaseModel song,
-      ) async {
+  Future<void> _showArtistPickerSheet(BuildContext context, SongBaseModel song) async {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,

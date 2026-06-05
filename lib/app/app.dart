@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../pages/main/main_page.dart';
+import '../pages/splash_page/splash_page.dart';
 import '../utils/nav_obs.dart';
 
 class MyApp extends StatelessWidget {
@@ -8,10 +8,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // showPerformanceOverlay: true,
+      /// showPerformanceOverlay: true,
       title: 'YMusic',
       theme: ThemeData.dark(),
-      home: MainPage(),
+      /// home: MainPage(),
+      home: SplashPage(),
       navigatorObservers: [
         AppRouteObserver()
       ],
