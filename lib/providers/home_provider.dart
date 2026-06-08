@@ -11,6 +11,7 @@ import 'package:yao_music/pages/artist_detail/artist_detail.dart';
 
 import '../constants/load_state.dart';
 import '../models/daily_recommend.dart';
+import '../models/mv_all.dart';
 import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
 import '../pages/album_detail/album_detail.dart';
@@ -59,6 +60,12 @@ class HomeProvider extends ChangeNotifier {
   List<RankListModel> rankFull = [];
   /// 榜单数据加载状态
   LoadState loadRankListState = LoadState.loading;
+  /// 所有MV加载状态
+  LoadState loadAllMvLoadState = LoadState.loading;
+  /// 所有MV数据
+  List<MvModel> mv = [];
+  /// 所有MV详情页分页加载
+  /// 所有MV详情页数据
 
   /// 加载banner数据
   Future<void> loadBannerData() async {
@@ -80,7 +87,6 @@ class HomeProvider extends ChangeNotifier {
         loadBannerState = LoadState.success;
       }
     } catch (e) {
-
       loadBannerState = LoadState.error;
     }
     notifyListeners();
@@ -102,9 +108,7 @@ class HomeProvider extends ChangeNotifier {
       notifyListeners();
       final result = await HomeService.getDailyRecommend();
       daily = result;
-      nextFrame(() {
-        loadDailyState = LoadState.success;
-      });
+      loadDailyState = LoadState.success;
     } catch (e) {
       loadDailyState = LoadState.error;
     }
@@ -264,6 +268,32 @@ class HomeProvider extends ChangeNotifier {
       loadRankListState = LoadState.success;
     } catch (e) {
       loadRankListState = LoadState.error;
+    }
+    notifyListeners();
+  }
+  /// 加载MV
+  Future<void> loadAllMv() async {
+    List<MvModel> place = List.generate(
+      3,
+          (_) => MvModel(
+            id: random.nextInt(100),
+            name: '这是一个MV',
+            cover: 'lib/assets/image/banner.jpg',
+            briefDesc: '',
+            artistId: -1,
+            artistName: '',
+      ),
+    );
+    mv = place;
+    try {
+      loadAllMvLoadState = LoadState.loading;
+      notifyListeners();
+      final result = await HomeService.getAllMvPage(MvAllDTO(MvAllOrderType.hot, limit: 20, offset: 0));
+      print(result.mv);
+      mv = result.mv;
+      loadAllMvLoadState = LoadState.success;
+    } catch (e) {
+      loadAllMvLoadState = LoadState.error;
     }
     notifyListeners();
   }

@@ -1,6 +1,8 @@
 import '../api/home_api.dart';
+import '../api/mv_all_api.dart';
 import '../models/daily_recommend.dart';
 import '../models/hot_top.dart';
+import '../models/mv_all.dart';
 import '../models/new_album_release.dart';
 import '../models/new_discover.dart';
 import '../models/personalized_set_list.dart';
@@ -51,5 +53,10 @@ class HomeService {
   static Future<List<RankListModel>> getRankListFull() async  {
     final result = await HomeApi.fetchRankList();
     return result.toList();
+  }
+  /// 获取MV分页
+  static Future<MvAllModel> getAllMvPage(MvAllDTO params) async {
+    final result = await MvAllApi.fetchAllMv(params);
+    return result;
   }
 }

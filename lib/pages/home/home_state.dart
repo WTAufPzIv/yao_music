@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yao_music/pages/home/widgets/all_mv.dart';
 import 'package:yao_music/pages/home/widgets/daily_recommend.dart';
 import 'package:yao_music/pages/home/widgets/hot_top.dart';
 import 'package:yao_music/pages/home/widgets/new_album_release.dart';
@@ -41,8 +42,9 @@ class HomePageState extends State<HomePage> {
               const NewAlbumRelease(),
               const HotTop(),
               const RankList(),
+              const AllMv(),
               const SizedBox(
-                height: 30,
+                height: 80,
               )
             ],
           )
